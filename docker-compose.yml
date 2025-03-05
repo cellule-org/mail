@@ -1,0 +1,38 @@
+services:
+  mail:
+    image: cellules/mail:latest
+    container_name: mail-app
+    ports:
+      - "3001:3001"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://postgres:password@mail-db:5432/maildb
+      CORE_WS_URL: ws://core-app:3000
+    networks:
+      - cellule
+
+  db:
+    image: postgres:13
+    container_name: mail-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: maildb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - cellule
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+
+networks:
+  cellule:
+    external: true

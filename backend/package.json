@@ -1,0 +1,31 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node src/index.ts",
+    "start": "node build/index.js",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:generate": "prisma generate",
+    "start:ws": "node build/ws-server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@fastify/websocket": "^11.0.2",
+    "@prisma/client": "^6.4.1",
+    "express": "^4.21.2",
+    "prisma": "^6.4.1",
+    "ws": "^8.18.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.13.8",
+    "@types/pino": "^7.0.4",
+    "@types/ws": "^8.5.14",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.2"
+  }
+}
