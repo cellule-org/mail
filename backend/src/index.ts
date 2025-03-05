@@ -103,8 +103,8 @@ const start = async () => {
 
         mail_ws.on('connection', async (ws) => {
             ws.send(JSON.stringify({
-                type: 'load_events',
-                events: await prisma.event.findMany()
+                type: 'load_mails',
+                mails: await prisma.mail.findMany()
             }));
 
             ws.on('message', async (message) => {
