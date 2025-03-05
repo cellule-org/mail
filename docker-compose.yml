@@ -3,7 +3,7 @@ services:
     image: cellules/mail:latest
     container_name: mail-app
     ports:
-      - "3001:3001"
+      - "3002:3002"
     depends_on:
       db:
         condition: service_healthy

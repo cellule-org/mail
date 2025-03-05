@@ -20,6 +20,6 @@ WORKDIR /app/backend
 RUN npm install
 RUN npm install -g prisma
 
-EXPOSE 3001
+EXPOSE 3002
 
 CMD npx prisma migrate deploy && npx prisma generate && npx prisma db push --accept-data-loss && npm run dev

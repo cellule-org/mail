@@ -149,9 +149,9 @@ const start = async () => {
         });
 
         try {
-            server.listen(3001, () => {
-                console.log('Server is running on http://localhost:3001');
-                console.log('WebSocket server is running on ws://localhost:3001');
+            server.listen(3002, () => {
+                console.log('Server is running on http://localhost:3002');
+                console.log('WebSocket server is running on ws://localhost:3002');
             });
         } catch (err) {
             //Do nothing
