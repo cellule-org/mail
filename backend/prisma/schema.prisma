@@ -12,3 +12,31 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Type {
+  id    String @id @default(cuid())
+  name  String // "inbox", "sent", "drafts", "spam", "trash"
+  mails Mail[]
+}
+
+model Tag {
+  id    String @id @default(cuid())
+  name  String
+  color String
+  mails Mail[]
+}
+
+model Mail {
+  id        String   @id @default(cuid())
+  from      String
+  to        String
+  subject   String
+  text      String
+  html      String
+  typeId    String
+  read      Boolean  @default(false)
+  type      Type     @relation(fields: [typeId], references: [id])
+  tags      Tag[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
