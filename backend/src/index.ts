@@ -1,11 +1,10 @@
 import express, { Request, Response, NextFunction } from 'express';
 import { createServer } from 'http';
 import path from 'path';
-import { RawData, WebSocket, WebSocketServer } from 'ws';
-import { PrismaClient } from '@prisma/client'
+import { WebSocket, WebSocketServer } from 'ws';
 import { existsSync } from 'fs';
-
-const prisma = new PrismaClient();
+import { connectToWebSocketServer, createWebSocket, messageHandler } from './websocket';
+import { handleSendEmail, handleReceiveEmail } from './email';
 
 const app = express();
 const server = createServer(app);
@@ -42,77 +41,28 @@ app.get("/locales/:lng/translation.json", (req: Request, res: Response) => {
     res.sendFile(filePath);
 });
 
-const messageHandler = (message: RawData) => {
-    const parsedMessage = JSON.parse(message.toString());
-    switch (parsedMessage.type) {
-        case 'message':
-            console.log('Received message:', parsedMessage.data);
-            break;
-        default:
-            console.warn(`Unknown message type: ${parsedMessage.type}`);
-    }
-}
-
-const connectToWebSocketServer = async (url: string, retries: number = 50, delay: number = 3000): Promise<WebSocket> => {
-    return new Promise((resolve, reject) => {
-        const attempt = (retryCount: number) => {
-            if (retryCount === 0) {
-                return reject(new Error('Failed to connect to WebSocket server after multiple attempts'));
-            }
-
-            console.log(`Connecting to WebSocket server (attempt ${retries - retryCount + 1}/${retries})`);
-
-            const ws = new WebSocket(url);
-
-            ws.on('open', () => {
-                console.log('Connected to WebSocket server');
-                resolve(ws);
-            });
-
-            ws.on('error', (err) => {
-                setTimeout(() => attempt(retryCount - 1), delay);
-            });
-
-            ws.on('close', () => {
-                //console.log('WebSocket connection closed');
-            });
-        };
-
-        attempt(retries);
-    });
-};
-
-const createWebSocket = () => {
-    const wss = new WebSocketServer({ server });
-
-    wss.on('error', (err) => {
-        console.error('WebSocket server error:', err);
-    });
-
-
-    return wss;
-}
-
 const start = async () => {
     try {
         core_ws = await connectToWebSocketServer(process.env.CORE_WS_URL || 'ws://core-app:3000');
         if (!core_ws) {
             throw new Error('Failed to connect to core WebSocket server');
         }
-        mail_ws = createWebSocket() as WebSocketServer;
-
+        mail_ws = createWebSocket(server) as WebSocketServer;
+        handleReceiveEmail();
         mail_ws.on('connection', async (ws) => {
-            ws.send(JSON.stringify({
-                type: 'load_mails',
-                mails: await prisma.mail.findMany()
-            }));
-
             ws.on('message', async (message) => {
                 const parsedMessage = JSON.parse(message.toString());
                 if (!core_ws) { // Can't happen, but TypeScript doesn't know that
                     return;
                 }
                 switch (parsedMessage.type) {
+                    case 'send_email':
+                        try {
+                            handleSendEmail(ws, parsedMessage.data);
+                        } catch (err) {
+                            console.error('Error sending email:', err);
+                        }
+                        break;
                     default:
                         console.warn(`Unknown message type: ${parsedMessage.type}`);
                 }
@@ -135,10 +85,10 @@ const start = async () => {
             }
         }));
 
-
         core_ws.on('message', (message) => {
             messageHandler(message);
         });
+
         core_ws.on('close', () => {
             console.log('WebSocket connection closed, clearing event and restarting...');
             if (core_ws) {
