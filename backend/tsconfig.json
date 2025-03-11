@@ -11,6 +11,7 @@
   },
   "include": [
     "src",
-    "src/ws-server.ts"
+    "src/ws-server.ts",
+    "src/env.d.ts"
   ]
 }
