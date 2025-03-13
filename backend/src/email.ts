@@ -28,44 +28,46 @@ const client = new ImapFlow({
     logger: false
 });
 
-export const handleReceiveEmail = async () => {
-    await client.connect();
-    for (let folder of await client.list()) {
-        let lock;
-        try {
-            lock = await client.getMailboxLock(folder.path);
-        } catch (err) {
-            continue;
-        }
-        try {
-            for await (let message of client.fetch('1:*', { source: true, envelope: true })) {
-                let mail = await prisma.mail.findUnique({
-                    where: {
-                        id: message.uid.toString()
-                    }
-                });
+const stringToId = (str: string) => {
+    return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
+};
 
-                if (mail) {
-                    continue;
+const handleMailbox = async (path: string) => {
+    let lock;
+    try {
+        lock = await client.getMailboxLock(path);
+    } catch (err) {
+        return;
+    }
+    try {
+        for await (let message of client.fetch('1:*', { source: true, envelope: true })) {
+            let mail = await prisma.mail.findUnique({
+                where: {
+                    id: message.uid.toString()
                 }
-                console.log('New mail:', message.uid.toString());
+            });
 
-                if (message.source) {
-                    let body = await simpleParser(message.source);
+            if (mail) {
+                continue;
+            }
 
-                    let to = body.to;
+            if (message.source) {
+                let body = await simpleParser(message.source);
 
-                    let toAddresses: string[] = [];
-                    if (to) {
-                        if (Array.isArray(to)) {
-                            toAddresses = to.map(address => address.value[0].address).filter((address): address is string => address !== undefined);
-                        } else {
-                            if (to.value[0].address) {
-                                toAddresses.push(to.value[0].address);
-                            }
+                let to = body.to;
+
+                let toAddresses: string[] = [];
+                if (to) {
+                    if (Array.isArray(to)) {
+                        toAddresses = to.map(address => address.value[0].address).filter((address): address is string => address !== undefined);
+                    } else {
+                        if (to.value[0].address) {
+                            toAddresses.push(to.value[0].address);
                         }
                     }
+                }
 
+                try {
                     await prisma.mail.create({
                         data: {
                             id: message.uid.toString(),
@@ -78,18 +80,18 @@ export const handleReceiveEmail = async () => {
                             Mailbox: {
                                 connectOrCreate: {
                                     where: {
-                                        id: folder.path
+                                        id: stringToId(path)
                                     },
                                     create: {
-                                        id: folder.path,
-                                        name: folder.path
+                                        id: stringToId(path),
+                                        name: path
                                     }
                                 }
                             },
                             Thread: {
                                 connectOrCreate: {
                                     where: {
-                                        id: body.messageId
+                                        id: message.threadId || message.uid.toString()
                                     },
                                     create: {
                                         id: message.threadId || message.uid.toString(),
@@ -98,11 +100,29 @@ export const handleReceiveEmail = async () => {
                             }
                         }
                     });
+                } catch (err) {
+                    // Ignore duplicate errors
                 }
             }
-        } finally {
-            lock.release();
         }
+    } finally {
+        lock.release();
+    }
+}
+
+export const handleReceiveEmail = async () => {
+    //We have to make sure to handle the INBOX at the end (cause it could contain emails from other mailboxes)
+    await client.connect();
+    for (let folder of await client.list()) {
+        if (folder.path === 'INBOX' || folder.path === process.env.INBOX) {
+            continue;
+        }
+        console.log('Processing mailbox:', folder.path);
+        await handleMailbox(folder.path);
+    }
+    if (process.env.INBOX) {
+        console.log('Processing mailbox:', process.env.INBOX);
+        await handleMailbox(process.env.INBOX);
     }
     client.on('exists', async (mailbox: MailboxObject) => {
         console.log('New mail in mailbox:', mailbox.path);

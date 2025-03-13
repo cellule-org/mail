@@ -10,5 +10,11 @@ declare namespace NodeJS {
         IMAP_SECURE: boolean;
         IMAP_USER: string;
         IMAP_PASS: string;
+
+        INBOX: string;
+        SENT: string;
+        DRAFTS: string;
+        TRASH: string;
+        SPAM: string;
     }
 }

@@ -8,7 +8,7 @@ export const messageHandler = async (message: RawData) => {
             //console.log('Received message:', parsedMessage.data);
             break;
         default:
-            console.warn(`Unknown message type: ${parsedMessage.type}`);
+            console.warn(`core: Unknown message type: ${parsedMessage.type}`);
     }
 }
 

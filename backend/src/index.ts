@@ -5,9 +5,12 @@ import { WebSocket, WebSocketServer } from 'ws';
 import { existsSync } from 'fs';
 import { connectToWebSocketServer, createWebSocket, messageHandler } from './websocket';
 import { handleSendEmail, handleReceiveEmail } from './email';
+import { PrismaClient } from '@prisma/client';
 
 const app = express();
 const server = createServer(app);
+
+const prisma = new PrismaClient();
 
 let core_ws: WebSocket | null = null;
 let mail_ws: WebSocketServer | null = null;
@@ -50,6 +53,30 @@ const start = async () => {
         mail_ws = createWebSocket(server) as WebSocketServer;
         handleReceiveEmail();
         mail_ws.on('connection', async (ws) => {
+
+            ws.send(JSON.stringify({
+                type: 'mailboxes_variables',
+                data: {
+                    INBOX: process.env.INBOX || 'INBOX',
+                    SENT: process.env.SENT || 'SENT',
+                    DRAFTS: process.env.DRAFTS || 'DRAFTS',
+                    TRASH: process.env.TRASH || 'TRASH',
+                    SPAM: process.env.SPAM || 'SPAM',
+                },
+            }));
+
+            let mails = await prisma.mail.findMany({
+                take: 20,
+                orderBy: {
+                    date: 'desc',
+                },
+            });
+
+            ws.send(JSON.stringify({
+                type: 'load_mails',
+                data: mails,
+            }));
+
             ws.on('message', async (message) => {
                 const parsedMessage = JSON.parse(message.toString());
                 if (!core_ws) { // Can't happen, but TypeScript doesn't know that
@@ -63,8 +90,26 @@ const start = async () => {
                             console.error('Error sending email:', err);
                         }
                         break;
+                    case 'load_mails':
+                        try {
+                            let pagination = parsedMessage.data.pagination;
+                            const mails = await prisma.mail.findMany({
+                                take: 20,
+                                skip: 20 * pagination,
+                                orderBy: {
+                                    date: 'desc',
+                                },
+                            });
+                            ws.send(JSON.stringify({
+                                type: 'load_mails',
+                                data: mails,
+                            }));
+                        } catch (err) {
+                            console.error('Error loading mails:', err);
+                        }
+                        break;
                     default:
-                        console.warn(`Unknown message type: ${parsedMessage.type}`);
+                        console.warn(`mail: Unknown message type: ${parsedMessage.type}`);
                 }
             });
         });
