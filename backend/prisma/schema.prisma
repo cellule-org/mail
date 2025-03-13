@@ -14,9 +14,9 @@ datasource db {
 }
 
 model Mailbox {
-  id    String @id @default(cuid())
-  name  String
-  mails Mail[]
+  id   String @id
+  name String
+  Mail Mail[]
 }
 
 model Thread {
@@ -25,17 +25,17 @@ model Thread {
 }
 
 model Mail {
-  id       String   @id @default(cuid())
-  labels   String[]
-  threadId String
-  from     String   @default("unknown")
-  to       String[]
-  subject  String
-  text     String
-  html     String
-  typeId   String
-  read     Boolean  @default(false)
-  date     DateTime @default(now())
-  Thread   Thread   @relation(fields: [threadId], references: [id])
-  Mailbox  Mailbox  @relation(fields: [typeId], references: [id])
+  id        String   @id @default(cuid())
+  labels    String[]
+  threadId  String
+  mailboxId String
+  from      String   @default("unknown")
+  to        String[]
+  subject   String
+  text      String
+  html      String
+  read      Boolean  @default(false)
+  date      DateTime @default(now())
+  Thread    Thread   @relation(fields: [threadId], references: [id])
+  Mailbox   Mailbox  @relation(fields: [mailboxId], references: [id])
 }
