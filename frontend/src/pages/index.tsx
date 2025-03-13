@@ -1,69 +1,64 @@
-import { ModeToggle } from "@/components/ui/mode-toogle";
+import { useEffect, useState } from "react";
+
+import EmailForm from "@/components/ui/email";
+import { Email, EmailList } from "@/components/ui/email-list";
+import EmailNav from "@/components/ui/email-nav";
+
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable"
 import { useWebSocketContext } from "@/lib/websocket-context";
-import { useEffect } from "react";
-import { Buffer } from 'buffer';
 
-
-export default function index() {
+export default function Index() {
+  const [pagination, setPagination] = useState(0);
   const { sendMessage } = useWebSocketContext();
+  const [emails, setEmails] = useState<Email[]>([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    const handleLoadMails = (event: Event) => {
+      const data = (event as CustomEvent).detail as Email[];
+      if (data.length === 0) {
+        setLoading(true); // you're at the end of the list
+        return;
+      }
+      setEmails((prevEmails) => [...prevEmails, ...data]);
+      setLoading(false);
+    };
+
+    window.addEventListener("load_mails", handleLoadMails);
+
     return () => {
-      // Cleanup if necessary
+      window.removeEventListener("load_mails", handleLoadMails);
     };
   }, []);
 
+  const handleBottomReached = () => {
+    if (emails.length === 0 || loading) {
+      return;
+    }
+    setLoading(true);
+    setPagination((prev) => prev + 1);
+    sendMessage({ type: "load_mails", data: { pagination } });
+  }
+
   return (
-    <section className="flex flex-col items-center justify-center h-screen">
-      <section className="flex items-center justify-between w-full px-6 py-4">
-        <h1 className="text-2xl font-bold text-primary">Mailqsdqsd</h1>
-        <form
-          onSubmit={async (e) => {
-            e.preventDefault();
-            const formData = new FormData(e.target as HTMLFormElement);
-
-            const to = formData.get('to') as string;
-            const subject = formData.get('subject') as string;
-            const text = formData.get('text') as string;
-            const cc = formData.get('cc') as string;
-            const bcc = formData.get('bcc') as string;
-            const ical = formData.get('ical') as string;
-            const attachments = formData.getAll('attachments') as File[];
-
-            console.log(attachments);
-
-            const formattedAttachments = await Promise.all(attachments.map(async (attachment) => ({
-              title: attachment.name,
-              data: Buffer.from(await attachment.arrayBuffer()),
-            })));
-
-            console.log(formattedAttachments);
-
-            sendMessage({
-              type: 'send_email',
-              data: {
-                to,
-                subject,
-                text,
-                cc,
-                bcc,
-                ical: ical ? JSON.parse(ical) : undefined,
-                attachments: formattedAttachments,
-              },
-            });
-          }}
-        >
-          <input type="email" name="to" placeholder="To" required className="mr-2 p-1 border" />
-          <input type="text" name="subject" placeholder="Subject" required className="mr-2 p-1 border" />
-          <textarea name="text" placeholder="Text" required className="mr-2 p-1 border"></textarea>
-          <input type="email" name="cc" placeholder="CC" className="mr-2 p-1 border" />
-          <input type="email" name="bcc" placeholder="BCC" className="mr-2 p-1 border" />
-          <input type="text" name="ical" placeholder="iCal (JSON format)" className="mr-2 p-1 border" />
-          <input type="file" name="attachments" multiple className="mr-2 p-1 border" />
-          <button type="submit" className="p-1 bg-blue-500 text-white">Send</button>
-        </form>
-        <ModeToggle />
-      </section>
-    </section>
+    <section className="flex flex-col items-center justify-between h-screen max-h-screen min-h-screen">
+      <ResizablePanelGroup className="flex flex-row w-full h-full max-h-screen px-6 gap-4 bg-card rounded-xl shadow-lg" direction="horizontal">
+        <ResizablePanel defaultSize={10} minSize={10} maxSize={15}>
+          <EmailNav tags={[]} className="py-4" />
+        </ResizablePanel>
+        <ResizableHandle withHandle />
+        <ResizablePanel defaultSize={46.25} minSize={25} maxSize={68} className="!overflow-y-auto">
+          <EmailList className="w-full pt-4" emails={emails} onBottomReached={handleBottomReached} />
+        </ResizablePanel>
+        <ResizableHandle withHandle />
+        <ResizablePanel defaultSize={46.25} minSize={25} maxSize={68}>
+          <EmailForm className="w-full pt-4" />
+        </ResizablePanel >
+      </ResizablePanelGroup >
+    </section >
   )
 }
