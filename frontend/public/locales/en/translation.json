@@ -1,1 +1,21 @@
-{}
+{
+    "categories": "Categories",
+    "inbox": "Inbox",
+    "sent": "Sent",
+    "drafts": "Drafts",
+    "trash": "Trash",
+    "spam": "Spam",
+    "new_message": "New Message",
+    "send_message": "Send Message",
+    "send_reply": "Send Reply",
+    "sending": "Sending...",
+    "to": "To",
+    "cc": "CC",
+    "bcc": "BCC",
+    "subject": "Subject",
+    "message": "Message",
+    "attachments": "Attachments",
+    "search": "Search emails",
+    "body_placeholder": "Type your message here...",
+    "loading": "Loading..."
+}

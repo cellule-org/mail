@@ -1,1 +1,21 @@
-{}
+{
+    "categories": "Catégories",
+    "inbox": "Boîte de réception",
+    "sent": "Envoyés",
+    "drafts": "Brouillons",
+    "trash": "Corbeille",
+    "spam": "Spam",
+    "new_message": "Nouveau Message",
+    "send_message": "Envoyer le Message",
+    "send_reply": "Envoyer la Réponse",
+    "sending": "Envoi en cours...",
+    "to": "À",
+    "cc": "CC",
+    "bcc": "CCI",
+    "subject": "Objet",
+    "message": "Message",
+    "attachments": "Pièces jointes",
+    "search": "Rechercher des emails",
+    "body_placeholder": "Tapez votre message ici...",
+    "loading": "Chargement..."
+}

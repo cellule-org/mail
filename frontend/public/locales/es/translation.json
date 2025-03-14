@@ -1,1 +1,21 @@
-{}
+{
+    "categories": "Categorías",
+    "inbox": "Bandeja de entrada",
+    "sent": "Enviados",
+    "drafts": "Borradores",
+    "trash": "Papelera",
+    "spam": "Spam",
+    "new_message": "Nuevo Mensaje",
+    "send_message": "Enviar Mensaje",
+    "send_reply": "Enviar Respuesta",
+    "sending": "Enviando...",
+    "to": "Para",
+    "cc": "CC",
+    "bcc": "CCO",
+    "subject": "Asunto",
+    "message": "Mensaje",
+    "attachments": "Adjuntos",
+    "search": "Buscar emails",
+    "body_placeholder": "Escribe tu mensaje aquí...",
+    "loading": "Cargando..."
+}

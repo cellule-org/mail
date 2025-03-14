@@ -5,6 +5,7 @@ import { Separator } from "./separator";
 import { Button } from "./button";
 import { File, Inbox, MailPlus, MailWarning, Send, Trash2 } from "lucide-react";
 import { cloneElement, ReactElement, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface Tag {
     id: string;
@@ -38,6 +39,8 @@ const MailboxLink = ({ mailbox, icon, label }: { mailbox: string, icon: ReactEle
 const EmailNav = ({ tags, onNewMessage, className, ...props }: EmailNavProps & React.ComponentProps<"nav">) => {
     const [mailboxes, setMailboxes] = useState(() => JSON.parse(sessionStorage.getItem('mailboxes') || '{}'));
 
+    const { t } = useTranslation();
+
     useEffect(() => {
         const handleStorageChange = () => {
             setMailboxes(JSON.parse(sessionStorage.getItem('mailboxes') || '{}'));
@@ -56,26 +59,26 @@ const EmailNav = ({ tags, onNewMessage, className, ...props }: EmailNavProps & R
                 <h1 className="font-bold text-xl">Mail</h1>
                 <Button className="w-full min-w-fit" onClick={onNewMessage}>
                     <MailPlus size={24} />
-                    Nouveau message
+                    {t('new_message')}
                 </Button>
 
                 <section className="flex flex-col justify-start gap-4">
-                    <h2 className="text-lg font-semibold">Catégories</h2>
+                    <h2 className="text-lg font-semibold">{t('categories')}</h2>
                     <ul className="flex flex-col gap-2">
                         {mailboxes.INBOX && (
-                            <MailboxLink mailbox={mailboxes.INBOX} icon={<Inbox size={16} />} label="Inbox" />
+                            <MailboxLink mailbox={mailboxes.INBOX} icon={<Inbox size={16} />} label={t('inbox')} />
                         )}
                         {mailboxes.DRAFTS && (
-                            <MailboxLink mailbox={mailboxes.DRAFTS} icon={<File size={16} />} label="Drafts" />
+                            <MailboxLink mailbox={mailboxes.DRAFTS} icon={<File size={16} />} label={t('drafts')} />
                         )}
                         {mailboxes.SENT && (
-                            <MailboxLink mailbox={mailboxes.SENT} icon={<Send size={16} />} label="Sent" />
+                            <MailboxLink mailbox={mailboxes.SENT} icon={<Send size={16} />} label={t('sent')} />
                         )}
                         {mailboxes.SPAM && (
-                            <MailboxLink mailbox={mailboxes.SPAM} icon={<MailWarning size={16} />} label="Spam" />
+                            <MailboxLink mailbox={mailboxes.SPAM} icon={<MailWarning size={16} />} label={t('spam')} />
                         )}
                         {mailboxes.TRASH && (
-                            <MailboxLink mailbox={mailboxes.TRASH} icon={<Trash2 size={16} />} label="Trash" />
+                            <MailboxLink mailbox={mailboxes.TRASH} icon={<Trash2 size={16} />} label={t('trash')} />
                         )}
                     </ul>
                 </section>

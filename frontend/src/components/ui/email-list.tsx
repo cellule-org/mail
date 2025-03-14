@@ -8,10 +8,11 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 
 import { cn } from "@/lib/utils"
 
-import { formatDistanceToNow } from "date-fns"
+import { formatDistanceToNow, Locale } from "date-fns"
 import { useSearchParams } from "react-router"
 import { Input } from "./input"
 import { Search } from "lucide-react"
+import { useTranslation } from "react-i18next"
 
 export interface Email {
     id: string
@@ -33,17 +34,20 @@ export interface Email {
 
 interface EmailListProps {
     emails: Email[]
+    locale: Locale
     onBottomReached: () => void
     onMailClick: (email: Email) => void
     loading?: boolean
 }
 
-export function EmailList({ emails, onBottomReached, onMailClick, loading = false, className, ...props }: EmailListProps & ComponentProps<"section">) {
+export function EmailList({ emails, locale, onBottomReached, onMailClick, loading = false, className, ...props }: EmailListProps & ComponentProps<"section">) {
     const [mails, setMails] = useState(emails);
 
     const bottomRef = useRef<HTMLDivElement>(null)
 
     const [mailboxes, setMailboxes] = useState(() => JSON.parse(sessionStorage.getItem('mailboxes') || '{}'));
+
+    const { t } = useTranslation();
 
     useEffect(() => {
         const handleStorageChange = () => {
@@ -138,7 +142,7 @@ export function EmailList({ emails, onBottomReached, onMailClick, loading = fals
         <section key={`mailbox-${searchParams.get('mailbox')}`} className={cn("w-full space-y-2", className)} {...props}>
             <Input
                 prefixIcon={<Search size={16} />}
-                placeholder="Search emails..."
+                placeholder={t("search")}
                 value={searchParams.get('search') || ""}
                 onChange={(e) => {
                     const newParams = new URLSearchParams(searchParams);
@@ -158,7 +162,7 @@ export function EmailList({ emails, onBottomReached, onMailClick, loading = fals
                                 <section className="flex items-center justify-between">
                                     <section className="font-medium">{email.from}</section>
                                     <section className="text-xs text-muted-foreground">
-                                        {formatDistanceToNow(email.date, { addSuffix: true })}
+                                        {formatDistanceToNow(email.date, { addSuffix: true, locale })}
                                     </section>
                                 </section>
 
@@ -178,7 +182,7 @@ export function EmailList({ emails, onBottomReached, onMailClick, loading = fals
                     </CardContent>
                 </Card>
             ))}
-            {loading && <section className="py-4 text-center text-sm text-muted-foreground">Loading more emails...</section>}
+            {loading && <section className="py-4 text-center text-sm text-muted-foreground">{t("loading")}</section>}
             <section ref={bottomRef} className="h-4" />
         </section>
     )

@@ -1,18 +1,47 @@
 import { useEffect, useState } from "react";
 
+
 import EmailForm from "@/components/ui/email";
 import { Email, EmailList } from "@/components/ui/email-list";
 import EmailNav from "@/components/ui/email-nav";
-
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable"
 import { useWebSocketContext } from "@/lib/websocket-context";
+
 import { useNavigate, useSearchParams } from "react-router";
 
+import { useTranslation } from "react-i18next";
+import * as locales from 'date-fns/locale';
+
+type LocaleKey = keyof typeof locales;
+
 export default function Index() {
+  const { i18n } = useTranslation();
+  const language = i18n.language;
+
+  const getLocaleFromI18n = (language: string) => {
+    if (locales[language as LocaleKey]) {
+      return locales[language as LocaleKey];
+    }
+
+    const secondaryLanguage = language.split('-').join('');
+    if (locales[secondaryLanguage as LocaleKey]) {
+      return locales[secondaryLanguage as LocaleKey];
+    }
+
+    const mainKey = language.split('-')[0];
+    if (locales[mainKey as LocaleKey]) {
+      return locales[mainKey as LocaleKey];
+    }
+
+    console.warn(`Locale not found for language: ${language}`);
+
+    return locales['enUS'];
+  }
+
   const [pagination, setPagination] = useState(0);
   const { sendMessage } = useWebSocketContext();
 
@@ -96,7 +125,7 @@ export default function Index() {
         </ResizablePanel>
         <ResizableHandle withHandle />
         <ResizablePanel defaultSize={46.25} minSize={25} maxSize={68} className="!overflow-y-auto scrollbar scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900 scrollbar-track-neutral-700">
-          <EmailList className="w-full pt-4 px-4" emails={emails} onBottomReached={handleBottomReached} onMailClick={handleMailClick} />
+          <EmailList locale={getLocaleFromI18n(language)} className="w-full pt-4 px-4" emails={emails} onBottomReached={handleBottomReached} onMailClick={handleMailClick} />
         </ResizablePanel>
         <ResizableHandle withHandle />
         <ResizablePanel defaultSize={46.25} minSize={25} maxSize={68} className="!overflow-y-auto">

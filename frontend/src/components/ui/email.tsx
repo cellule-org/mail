@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input"
 import { useWebSocketContext } from "@/lib/websocket-context"
 import { Email } from "./email-list"
 import { MinimalTiptapEditor } from "../minimal-tiptap"
+import { useTranslation } from "react-i18next"
 
 const emailFormSchema = z.object({
     to: z.string().email({ message: "Please enter a valid email address" }),
@@ -35,6 +36,8 @@ export default function EmailForm({
 }: EmailReplyProps & ComponentProps<"section">) {
     const { sendMessage } = useWebSocketContext()
     const [isSubmitting, setIsSubmitting] = useState(false)
+
+    const { t } = useTranslation();
 
 
     const form = useForm<EmailFormValues>({
@@ -98,7 +101,7 @@ export default function EmailForm({
                         name="to"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>To</FormLabel>
+                                <FormLabel>{t("to")}</FormLabel>
                                 <FormControl>
                                     <Input placeholder="recipient@example.com" {...field} />
                                 </FormControl>
@@ -113,7 +116,7 @@ export default function EmailForm({
                             name="cc"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>CC</FormLabel>
+                                    <FormLabel>{t("cc")}</FormLabel>
                                     <FormControl>
                                         <Input placeholder="cc@example.com" {...field} />
                                     </FormControl>
@@ -127,7 +130,7 @@ export default function EmailForm({
                             name="bcc"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>BCC</FormLabel>
+                                    <FormLabel>{t("bcc")}</FormLabel>
                                     <FormControl>
                                         <Input placeholder="bcc@example.com" {...field} />
                                     </FormControl>
@@ -142,9 +145,9 @@ export default function EmailForm({
                         name="subject"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Subject</FormLabel>
+                                <FormLabel>{t("subject")}</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="Email subject" {...field} />
+                                    <Input placeholder={t("subject")} {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -157,7 +160,7 @@ export default function EmailForm({
                         name="text"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Body</FormLabel>
+                                <FormLabel>{t("message")}</FormLabel>
                                 <FormControl>
                                     <MinimalTiptapEditor
                                         value={email ? email.text : ""}
@@ -165,7 +168,7 @@ export default function EmailForm({
                                         className="w-full"
                                         editorContentClassName="p-5"
                                         output="html"
-                                        placeholder="Enter your description..."
+                                        placeholder={t("body_placeholder")}
                                         autofocus={true}
                                         editable={true}
                                         editorClassName="focus:outline-none"
@@ -181,7 +184,7 @@ export default function EmailForm({
                         name="attachments"
                         render={({ field: { value, onChange, ...fieldProps } }) => (
                             <FormItem>
-                                <FormLabel>Attachments</FormLabel>
+                                <FormLabel>{t("attachements")}</FormLabel>
                                 <FormControl>
                                     <Input
                                         type="file"
@@ -202,7 +205,7 @@ export default function EmailForm({
                     />
 
                     <Button type="submit" className="w-full" disabled={isSubmitting || !form.formState.isValid}>
-                        {isSubmitting ? "Sending..." : email ? "Send Reply" : "Send Email"}
+                        {isSubmitting ? t("sending") : email ? t("send_reply") : t("send_message")}
                     </Button>
                 </form>
             </Form>
