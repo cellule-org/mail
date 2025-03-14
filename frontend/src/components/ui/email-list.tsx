@@ -105,7 +105,7 @@ export function EmailList({ emails, onBottomReached, loading = false, className,
     }
 
     return (
-        <section className={cn("w-full space-y-2", className)} {...props}>
+        <section key={`mailbox-${searchParams.get('mailbox')}`} className={cn("w-full space-y-2", className)} {...props}>
             {sortEmails(filterEmails(emails, searchParams.get('mailbox'), searchParams.get('search'))).map((email) => (
                 <Card key={email.id} className="transition-all py-0 shadow-none">
                     <CardContent className="p-4">
