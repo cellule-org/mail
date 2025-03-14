@@ -178,9 +178,7 @@ export function EmailList({ emails, onBottomReached, onMailClick, loading = fals
                     </CardContent>
                 </Card>
             ))}
-
             {loading && <section className="py-4 text-center text-sm text-muted-foreground">Loading more emails...</section>}
-
             <section ref={bottomRef} className="h-4" />
         </section>
     )
