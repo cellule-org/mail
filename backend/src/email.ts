@@ -74,8 +74,7 @@ const handleMailbox = async (path: string) => {
                             from: body.from?.value[0].address || "unknown",
                             to: toAddresses,
                             subject: body.subject || "No subject",
-                            text: body.text || "No text",
-                            html: body.html || "No html",
+                            text: body.html ? body.html : (body.textAsHtml ? body.textAsHtml : body.text || ""),
                             date: body.date,
                             Mailbox: {
                                 connectOrCreate: {
@@ -157,7 +156,7 @@ export const handleSendEmail = async (ws: WebSocket, data: any) => {
         from: process.env.SMTP_USER,
         to,
         subject,
-        text,
+        html: text,
         cc: cc ? cc : undefined,
         bcc: bcc ? bcc : undefined,
         attachments: formattedAttachments ? formattedAttachments : undefined,
