@@ -5,6 +5,7 @@ import './i18n/config';
 import './index.css'
 import { ThemeProvider } from '@/components/theme-provider';
 import { WebSocketProvider } from '@/lib/websocket-context';
+import { TooltipProvider } from './components/ui/tooltip';
 
 const currentUrl = window.location.href
 const wsUrl = currentUrl.replace('http', 'ws').replace('https', 'wss')
@@ -41,7 +42,9 @@ createRoot(document.getElementById('root')!).render(
         onError={(event) => console.error("Erreur WebSocket", event)}
     >
         <ThemeProvider>
-            <Routes />
+            <TooltipProvider>
+                <Routes />
+            </TooltipProvider>
         </ThemeProvider>
     </WebSocketProvider>
 )
