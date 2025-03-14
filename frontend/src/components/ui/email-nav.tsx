@@ -13,6 +13,7 @@ interface Tag {
 
 interface EmailNavProps {
     tags: Tag[];
+    onNewMessage: () => void;
 }
 
 const MailboxLink = ({ mailbox, icon, label }: { mailbox: string, icon: ReactElement, label: string }) => {
@@ -34,7 +35,7 @@ const MailboxLink = ({ mailbox, icon, label }: { mailbox: string, icon: ReactEle
     );
 }
 
-const EmailNav = ({ tags, className, ...props }: EmailNavProps & React.ComponentProps<"nav">) => {
+const EmailNav = ({ tags, onNewMessage, className, ...props }: EmailNavProps & React.ComponentProps<"nav">) => {
     const [mailboxes, setMailboxes] = useState(() => JSON.parse(sessionStorage.getItem('mailboxes') || '{}'));
 
     useEffect(() => {
@@ -54,7 +55,7 @@ const EmailNav = ({ tags, className, ...props }: EmailNavProps & React.Component
             <h1>Mail</h1>
 
             <section className="flex flex-col gap-4 h-full">
-                <Button className="w-full">
+                <Button className="w-full" onClick={onNewMessage}>
                     <MailPlus size={24} />
                     Nouveau message
                 </Button>
