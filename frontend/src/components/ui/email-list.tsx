@@ -82,9 +82,13 @@ export function EmailList({ emails, onBottomReached, onMailClick, loading = fals
         }
     }, [onBottomReached, loading])
 
-    const truncateText = (text: string, maxLength: number) => {
-        return text.length > maxLength ? `${text.substring(0, maxLength)}...` : text
-    }
+    const cleanUpHTML = (html: string): string => {
+        return new DOMParser()
+            .parseFromString(
+                html.replace(/<head(?:[\s\S]*?)<\/head>/gi, "").replace(/<style(?:[\s\S]*?)<\/style>/gi, ""),
+                "text/html"
+            ).body.textContent || "";
+    };
 
     const getInitials = (name: string) => {
         return name
@@ -147,7 +151,7 @@ export function EmailList({ emails, onBottomReached, onMailClick, loading = fals
                                 <AvatarFallback>{getInitials(email.from)}</AvatarFallback>
                             </Avatar>
 
-                            <section className="flex-1 space-y-1.5">
+                            <section className="flex-1 space-y-1.5 w-1/2">
                                 <section className="flex items-center justify-between">
                                     <section className="font-medium">{email.from}</section>
                                     <section className="text-xs text-muted-foreground">
@@ -157,7 +161,7 @@ export function EmailList({ emails, onBottomReached, onMailClick, loading = fals
 
                                 <section className="font-semibold overflow-hidden text-ellipsis whitespace-nowrap">{email.subject}</section>
 
-                                <section className="text-sm text-muted-foreground">{truncateText(email.text, 100)}</section>
+                                <section className="text-sm text-muted-foreground overflow-hidden text-ellipsis whitespace-nowrap">{cleanUpHTML(email.text)}</section>
 
                                 <section className="flex items-center gap-2 pt-1">
                                     {email.attachments && email.attachments.length > 0 && (
