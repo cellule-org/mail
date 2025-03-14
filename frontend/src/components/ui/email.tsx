@@ -9,57 +9,41 @@ import { Buffer } from "buffer"
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
+
 import { useWebSocketContext } from "@/lib/websocket-context"
+import { Email } from "./email-list"
+import { MinimalTiptapEditor } from "../minimal-tiptap"
 
 const emailFormSchema = z.object({
     to: z.string().email({ message: "Please enter a valid email address" }),
     subject: z.string().min(1, { message: "Subject is required" }),
-    text: z.string().min(1, { message: "Message is required" }),
+    text: z.string().min(1, { message: "Email body is required" }),
     cc: z.string().email({ message: "Please enter a valid email address" }).optional().or(z.literal("")),
     bcc: z.string().email({ message: "Please enter a valid email address" }).optional().or(z.literal("")),
-    ical: z.string().optional().or(z.literal("")),
     attachments: z.any().optional(),
 })
 
 type EmailFormValues = z.infer<typeof emailFormSchema>
 
 export interface EmailReplyProps {
-    to?: string;
-    subject?: string;
-    originalText?: string;
-    cc?: string;
-    bcc?: string;
-    isReply?: boolean;
+    email: Email | null
 }
 
 export default function EmailForm({
-    to = "",
-    subject = "",
-    originalText = "",
-    cc = "",
-    bcc = "",
-    isReply = false,
+    email,
     ...props
 }: EmailReplyProps & ComponentProps<"section">) {
     const { sendMessage } = useWebSocketContext()
     const [isSubmitting, setIsSubmitting] = useState(false)
 
-    const formattedSubject = isReply && !subject.startsWith("Re:") ? `Re: ${subject}` : subject
-
-    const formattedText = isReply && originalText ?
-        `\n\n---------- Original Message ----------\n${originalText}` :
-        ""
-
     const form = useForm<EmailFormValues>({
         resolver: zodResolver(emailFormSchema),
         defaultValues: {
-            to,
-            subject: formattedSubject,
-            text: formattedText,
-            cc,
-            bcc,
-            ical: "",
+            to: email ? email.from : "",
+            subject: email ? `Re: ${email.subject}` : "",
+            text: email ? `\n\n---\n\n${email.text}` : "",
+            cc: "",
+            bcc: "",
             attachments: undefined,
         },
     })
@@ -67,15 +51,14 @@ export default function EmailForm({
     // Update form values when props change
     useEffect(() => {
         form.reset({
-            to,
-            subject: formattedSubject,
-            text: formattedText,
-            cc,
-            bcc,
-            ical: "",
+            to: email ? email.from : "",
+            subject: email ? `Re: ${email.subject}` : "",
+            text: email ? `\n\n---\n\n${email.text}` : "",
+            cc: "",
+            bcc: "",
             attachments: undefined,
         })
-    }, [to, formattedSubject, formattedText, cc, bcc, form])
+    }, [email])
 
     const onSubmit = async (data: EmailFormValues) => {
         setIsSubmitting(true)
@@ -91,7 +74,6 @@ export default function EmailForm({
 
             const emailData = {
                 ...data,
-                ical: data.ical ? JSON.parse(data.ical) : undefined,
                 attachments: formattedAttachments,
             }
 
@@ -168,30 +150,26 @@ export default function EmailForm({
                         )}
                     />
 
+                    {/* Body */}
                     <FormField
                         control={form.control}
                         name="text"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Message</FormLabel>
+                                <FormLabel>Body</FormLabel>
                                 <FormControl>
-                                    <Textarea placeholder="Your message here..." className="min-h-[120px]" {...field} />
+                                    <MinimalTiptapEditor
+                                        value={field.value}
+                                        onChange={(value) => field.onChange(value)}
+                                        className="w-full"
+                                        editorContentClassName="p-5"
+                                        output="html"
+                                        placeholder="Enter your description..."
+                                        autofocus={true}
+                                        editable={true}
+                                        editorClassName="focus:outline-none"
+                                    />
                                 </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-
-                    <FormField
-                        control={form.control}
-                        name="ical"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>iCal (JSON format)</FormLabel>
-                                <FormControl>
-                                    <Input placeholder='{"start":"2023-01-01T10:00:00Z","end":"2023-01-01T11:00:00Z"}' {...field} />
-                                </FormControl>
-                                <FormDescription>Optional calendar event in JSON format</FormDescription>
                                 <FormMessage />
                             </FormItem>
                         )}
@@ -223,7 +201,7 @@ export default function EmailForm({
                     />
 
                     <Button type="submit" className="w-full" disabled={isSubmitting || !form.formState.isValid}>
-                        {isSubmitting ? "Sending..." : isReply ? "Send Reply" : "Send Email"}
+                        {isSubmitting ? "Sending..." : email ? "Send Reply" : "Send Email"}
                     </Button>
                 </form>
             </Form>
