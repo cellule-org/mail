@@ -92,7 +92,7 @@ const start = async () => {
                         break;
                     case 'load_mails':
                         try {
-                            let pagination = parsedMessage.data.pagination;
+                            const pagination = parseInt(parsedMessage.data.pagination, 10) || 0;
                             const mails = await prisma.mail.findMany({
                                 take: 20,
                                 skip: 20 * pagination,
