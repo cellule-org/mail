@@ -10,12 +10,30 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable"
 import { useWebSocketContext } from "@/lib/websocket-context";
+import { useNavigate, useSearchParams } from "react-router";
 
 export default function Index() {
   const [pagination, setPagination] = useState(0);
   const { sendMessage } = useWebSocketContext();
   const [emails, setEmails] = useState<Email[]>([]);
   const [loading, setLoading] = useState(false);
+
+  const [mailboxes, setMailboxes] = useState(() => JSON.parse(sessionStorage.getItem('mailboxes') || '{}'));
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setMailboxes(JSON.parse(sessionStorage.getItem('mailboxes') || '{}'));
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
+
+  const navigate = useNavigate();
+  const [searchParams, _setSearchParams] = useSearchParams();
 
   useEffect(() => {
     const handleLoadMails = (event: Event) => {
@@ -34,6 +52,16 @@ export default function Index() {
       window.removeEventListener("load_mails", handleLoadMails);
     };
   }, []);
+
+  useEffect(() => {
+    const stringToId = (str: string) => {
+      return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    }
+    if (!searchParams.has("mailbox") && mailboxes.INBOX) {
+      navigate(`/?mailbox=${stringToId(mailboxes.INBOX)}`);
+      return;
+    }
+  }, [mailboxes, searchParams]);
 
   const handleBottomReached = () => {
     if (emails.length === 0 || loading) {
