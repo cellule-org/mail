@@ -184,7 +184,7 @@ export default function EmailForm({
                         name="attachments"
                         render={({ field: { value, onChange, ...fieldProps } }) => (
                             <FormItem>
-                                <FormLabel>{t("attachements")}</FormLabel>
+                                <FormLabel>{t("attachments")}</FormLabel>
                                 <FormControl>
                                     <Input
                                         type="file"
