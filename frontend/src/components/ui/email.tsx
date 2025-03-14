@@ -78,11 +78,12 @@ export default function EmailForm({
 
             const emailData = {
                 ...data,
+                inReplyTo: email ? email.id : undefined,
                 attachments: formattedAttachments,
             }
 
             sendMessage({
-                type: "send_email",
+                type: email ? 'reply_email' : "send_email",
                 data: emailData,
             })
         } catch (error) {
