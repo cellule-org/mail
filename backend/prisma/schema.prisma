@@ -33,7 +33,6 @@ model Mail {
   to        String[]
   subject   String
   text      String
-  html      String
   read      Boolean  @default(false)
   date      DateTime @default(now())
   Thread    Thread   @relation(fields: [threadId], references: [id])
