@@ -155,7 +155,7 @@ export function EmailList({ emails, onBottomReached, onMailClick, loading = fals
                                     </section>
                                 </section>
 
-                                <section className="font-semibold">{email.subject}</section>
+                                <section className="font-semibold overflow-hidden text-ellipsis whitespace-nowrap">{email.subject}</section>
 
                                 <section className="text-sm text-muted-foreground">{truncateText(email.text, 100)}</section>
 
