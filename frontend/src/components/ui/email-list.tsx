@@ -19,7 +19,6 @@ export interface Email {
     to: string[]
     subject: string
     text: string
-    html: string
     attachments?: {
         name: string
         size: number
@@ -83,11 +82,16 @@ export function EmailList({ emails, onBottomReached, onMailClick, loading = fals
     }, [onBottomReached, loading])
 
     const cleanUpHTML = (html: string): string => {
-        return new DOMParser()
+        let content = new DOMParser()
             .parseFromString(
                 html.replace(/<head(?:[\s\S]*?)<\/head>/gi, "").replace(/<style(?:[\s\S]*?)<\/style>/gi, ""),
                 "text/html"
             ).body.textContent || "";
+        content = content.replace(/&zwnj;/g, " ").replace(/&nbsp;/g, " ");
+        content = content.trim();
+        content = content.replace(/\s\s+/g, " ");
+        content = content.replace(/\n/g, " ");
+        return content;
     };
 
     const getInitials = (name: string) => {
@@ -110,7 +114,6 @@ export function EmailList({ emails, onBottomReached, onMailClick, loading = fals
                 if (email.from.toLowerCase().includes(searchLower)) score += 4;
                 if (email.subject.toLowerCase().includes(searchLower)) score += 3;
                 if (email.text.toLowerCase().includes(searchLower)) score += 2;
-                if (email.html.toLowerCase().includes(searchLower)) score += 2;
             }
 
             return { ...email, score };
@@ -144,7 +147,7 @@ export function EmailList({ emails, onBottomReached, onMailClick, loading = fals
                 }}
             />
             {mails.map((email) => (
-                <Card key={email.id} className="transition-all py-0 shadow-none" onClick={() => onMailClick(email)}>
+                <Card key={email.id} className="transition-all py-0 shadow-none cursor-pointer" onClick={() => onMailClick(email)}>
                     <CardContent className="p-4">
                         <section className="flex items-start gap-4">
                             <Avatar className="h-10 w-10 mt-1">
