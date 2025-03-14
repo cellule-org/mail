@@ -14,6 +14,7 @@ import { SectionFive } from './components/section/five'
 import { LinkBubbleMenu } from './components/bubble-menu/link-bubble-menu'
 import { useMinimalTiptapEditor } from './hooks/use-minimal-tiptap'
 import { MeasuredContainer } from './components/measured-container'
+import { useEffect } from 'react'
 
 export interface MinimalTiptapProps extends Omit<UseMinimalTiptapEditorProps, 'onUpdate'> {
   value?: Content
@@ -49,14 +50,19 @@ const Toolbar = ({ editor }: { editor: Editor }) => (
     </div>
   </div>
 )
-
 export const MinimalTiptapEditor = React.forwardRef<HTMLDivElement, MinimalTiptapProps>(
   ({ value, onChange, className, editorContentClassName, ...props }, ref) => {
-    const editor = useMinimalTiptapEditor({
+    let editor = useMinimalTiptapEditor({
       value,
       onUpdate: onChange,
       ...props
     })
+
+    useEffect(() => {
+      if (editor && value) {
+        editor.commands.setContent(value)
+      }
+    }, [value, editor])
 
     if (!editor) {
       return null
