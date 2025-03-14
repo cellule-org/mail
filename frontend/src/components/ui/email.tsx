@@ -36,12 +36,13 @@ export default function EmailForm({
     const { sendMessage } = useWebSocketContext()
     const [isSubmitting, setIsSubmitting] = useState(false)
 
+
     const form = useForm<EmailFormValues>({
         resolver: zodResolver(emailFormSchema),
         defaultValues: {
             to: email ? email.from : "",
             subject: email ? `Re: ${email.subject}` : "",
-            text: email ? `\n\n---\n\n${email.text}` : "",
+            text: email ? email.text : "",
             cc: "",
             bcc: "",
             attachments: undefined,
@@ -53,7 +54,7 @@ export default function EmailForm({
         form.reset({
             to: email ? email.from : "",
             subject: email ? `Re: ${email.subject}` : "",
-            text: email ? `\n\n---\n\n${email.text}` : "",
+            text: email ? email.text : "",
             cc: "",
             bcc: "",
             attachments: undefined,
@@ -159,7 +160,7 @@ export default function EmailForm({
                                 <FormLabel>Body</FormLabel>
                                 <FormControl>
                                     <MinimalTiptapEditor
-                                        value={field.value}
+                                        value={email ? email.text : ""}
                                         onChange={(value) => field.onChange(value)}
                                         className="w-full"
                                         editorContentClassName="p-5"
