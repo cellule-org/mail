@@ -113,8 +113,12 @@ const handleMailbox = async (path: string) => {
 export const handleReceiveEmail = async () => {
     //We have to make sure to handle the INBOX at the end (cause it could contain emails from other mailboxes)
     await client.connect();
+    const mailboxes = await client.list();
+    console.log('Mailboxes:', mailboxes.map(mailbox => mailbox.path));
+    let supported_mailboxes = [process.env.SENT, process.env.DRAFTS, process.env.TRASH, process.env.SPAM]; // Only process these mailboxes
+
     for (let folder of await client.list()) {
-        if (folder.path === 'INBOX' || folder.path === process.env.INBOX) {
+        if (folder.path === 'INBOX' || folder.path === process.env.INBOX || !supported_mailboxes.includes(folder.path)) {
             continue;
         }
         console.log('Processing mailbox:', folder.path);
