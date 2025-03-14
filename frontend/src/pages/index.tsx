@@ -15,8 +15,11 @@ import { useNavigate, useSearchParams } from "react-router";
 export default function Index() {
   const [pagination, setPagination] = useState(0);
   const { sendMessage } = useWebSocketContext();
+
   const [emails, setEmails] = useState<Email[]>([]);
   const [loading, setLoading] = useState(false);
+
+  const [selectedMail, setSelectedMail] = useState<Email | null>(null);
 
   const [mailboxes, setMailboxes] = useState(() => JSON.parse(sessionStorage.getItem('mailboxes') || '{}'));
 
@@ -42,7 +45,12 @@ export default function Index() {
         setLoading(true); // you're at the end of the list
         return;
       }
-      setEmails((prevEmails) => [...prevEmails, ...data]);
+      setEmails((prevEmails) => {
+        const newEmails = [...prevEmails, ...data];
+        const uniqueEmails = Array.from(new Set(newEmails.map(email => email.id)))
+          .map(id => newEmails.find(email => email.id === id) as Email);
+        return uniqueEmails.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      });
       setLoading(false);
     };
 
@@ -72,19 +80,23 @@ export default function Index() {
     sendMessage({ type: "load_mails", data: { pagination } });
   }
 
+  const handleMailClick = (email: Email) => {
+    setSelectedMail(email);
+  }
+
   return (
     <section className="flex flex-col items-center justify-between h-screen max-h-screen min-h-screen">
-      <ResizablePanelGroup className="flex flex-row w-full h-full max-h-screen px-6 gap-4 bg-card rounded-xl shadow-lg" direction="horizontal">
-        <ResizablePanel defaultSize={10} minSize={10} maxSize={15}>
-          <EmailNav tags={[]} className="py-4" />
+      <ResizablePanelGroup className="flex flex-row w-full h-full max-h-screen gap-1 bg-card rounded-xl shadow-lg" direction="horizontal">
+        <ResizablePanel defaultSize={12} minSize={12} maxSize={20}>
+          <EmailNav tags={[]} className="p-4" />
         </ResizablePanel>
         <ResizableHandle withHandle />
         <ResizablePanel defaultSize={46.25} minSize={25} maxSize={68} className="!overflow-y-auto">
-          <EmailList className="w-full pt-4" emails={emails} onBottomReached={handleBottomReached} />
+          <EmailList className="w-full pt-4 px-4" emails={emails} onBottomReached={handleBottomReached} onMailClick={handleMailClick} />
         </ResizablePanel>
         <ResizableHandle withHandle />
-        <ResizablePanel defaultSize={46.25} minSize={25} maxSize={68}>
-          <EmailForm className="w-full pt-4" />
+        <ResizablePanel defaultSize={46.25} minSize={25} maxSize={68} className="!overflow-y-auto">
+          <EmailForm className="w-full p-4" email={selectedMail} />
         </ResizablePanel >
       </ResizablePanelGroup >
     </section >
