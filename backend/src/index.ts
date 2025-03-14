@@ -4,7 +4,7 @@ import path from 'path';
 import { WebSocket, WebSocketServer } from 'ws';
 import { existsSync } from 'fs';
 import { connectToWebSocketServer, createWebSocket, messageHandler } from './websocket';
-import { handleSendEmail, handleReceiveEmail } from './email';
+import { handleSendEmail, handleReceiveEmail, handleReplyEmail } from './email';
 import { PrismaClient } from '@prisma/client';
 
 const app = express();
@@ -88,6 +88,13 @@ const start = async () => {
                             handleSendEmail(ws, parsedMessage.data);
                         } catch (err) {
                             console.error('Error sending email:', err);
+                        }
+                        break;
+                    case 'reply_email':
+                        try {
+                            handleReplyEmail(ws, parsedMessage.data);
+                        } catch (err) {
+                            console.error('Error replying to email:', err);
                         }
                         break;
                     case 'load_mails':

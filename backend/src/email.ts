@@ -187,3 +187,47 @@ export const handleSendEmail = async (ws: WebSocket, data: any) => {
         }
     });
 };
+
+
+export const handleReplyEmail = async (ws: WebSocket, data: any) => {
+    const { to, subject, text, cc, bcc, attachments, inReplyTo } = data;
+    let formattedAttachments;
+    if (attachments) {
+        console.log('Attachments:', attachments);
+        formattedAttachments = attachments.map((attachment: any) => ({
+            filename: attachment.title,
+            content: Buffer.from(new Uint8Array(attachment.data.data))
+        }));
+    }
+
+    transporter.sendMail({
+        from: process.env.SMTP_USER,
+        inReplyTo,
+        to,
+        subject,
+        html: text,
+        cc: cc ? cc : undefined,
+        bcc: bcc ? bcc : undefined,
+        attachments: formattedAttachments ? formattedAttachments : undefined,
+    }, (err, info) => {
+        if (err) {
+            ws.send(JSON.stringify({
+                type: 'message',
+                data: {
+                    type: 'error',
+                    title: 'Error sending email',
+                    text: err.message,
+                },
+            }));
+        } else {
+            ws.send(JSON.stringify({
+                type: 'message',
+                data: {
+                    type: 'success',
+                    title: 'Email sent',
+                    text: `Email successfully sent to ${to}`,
+                },
+            }));
+        }
+    });
+}
