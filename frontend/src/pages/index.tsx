@@ -91,11 +91,11 @@ export default function Index() {
   return (
     <section className="flex flex-col items-center justify-between h-screen max-h-screen min-h-screen">
       <ResizablePanelGroup className="flex flex-row w-full h-full max-h-screen gap-1 bg-card rounded-xl shadow-lg" direction="horizontal">
-        <ResizablePanel defaultSize={12} minSize={12} maxSize={20}>
-          <EmailNav tags={[]} className="p-4" onNewMessage={handleNewMail} />
+        <ResizablePanel defaultSize={12} minSize={12} maxSize={20} className="min-w-fit">
+          <EmailNav tags={[]} className="p-4 min-w-fit" onNewMessage={handleNewMail} />
         </ResizablePanel>
         <ResizableHandle withHandle />
-        <ResizablePanel defaultSize={46.25} minSize={25} maxSize={68} className="!overflow-y-auto">
+        <ResizablePanel defaultSize={46.25} minSize={25} maxSize={68} className="!overflow-y-auto scrollbar scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900 scrollbar-track-neutral-700">
           <EmailList className="w-full pt-4 px-4" emails={emails} onBottomReached={handleBottomReached} onMailClick={handleMailClick} />
         </ResizablePanel>
         <ResizableHandle withHandle />
