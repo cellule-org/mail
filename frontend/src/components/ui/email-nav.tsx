@@ -52,16 +52,15 @@ const EmailNav = ({ tags, onNewMessage, className, ...props }: EmailNavProps & R
 
     return (
         <nav className={cn("flex flex-col justify-between h-full bg-card shadow-lg", className)} {...props}>
-            <h1>Mail</h1>
-
             <section className="flex flex-col gap-4 h-full">
-                <Button className="w-full" onClick={onNewMessage}>
+                <h1 className="font-bold text-xl">Mail</h1>
+                <Button className="w-full min-w-fit" onClick={onNewMessage}>
                     <MailPlus size={24} />
                     Nouveau message
                 </Button>
 
                 <section className="flex flex-col justify-start gap-4">
-                    <h2>Catégories</h2>
+                    <h2 className="text-lg font-semibold">Catégories</h2>
                     <ul className="flex flex-col gap-2">
                         {mailboxes.INBOX && (
                             <MailboxLink mailbox={mailboxes.INBOX} icon={<Inbox size={16} />} label="Inbox" />
