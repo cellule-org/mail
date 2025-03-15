@@ -40,7 +40,7 @@ const handleMailbox = async (path: string) => {
         return;
     }
     try {
-        for await (let message of client.fetch('1:*', { source: true, envelope: true })) {
+        for await (let message of client.fetch('1:*', { source: true, envelope: true, flags: true })) {
             let mail = await prisma.mail.findUnique({
                 where: {
                     id: message.uid.toString()
@@ -72,6 +72,17 @@ const handleMailbox = async (path: string) => {
                         data: {
                             id: message.uid.toString(),
                             from: body.from?.value[0].address || "unknown",
+                            flags: Array.from(message.flags || []),
+                            cc: body.cc
+                                ? Array.isArray(body.cc)
+                                    ? body.cc.flatMap(address => address.value.map(email => email.address).filter((email): email is string => email !== undefined))
+                                    : body.cc.value.map(email => email.address).filter((email): email is string => email !== undefined)
+                                : [],
+                            bcc: body.bcc
+                                ? Array.isArray(body.bcc)
+                                    ? body.bcc.flatMap(address => address.value.map(email => email.address).filter((email): email is string => email !== undefined))
+                                    : body.bcc.value.map(email => email.address).filter((email): email is string => email !== undefined)
+                                : [],
                             to: toAddresses,
                             subject: body.subject || "No subject",
                             text: body.html ? body.html : (body.textAsHtml ? body.textAsHtml : body.text || ""),
@@ -140,6 +151,49 @@ export const handleReceiveEmail = async () => {
     });
 }
 
+export const addFlag = async (ws: WebSocket, data: { uid: string, flag: string }) => {
+    const { uid, flag } = data;
+    await client.messageFlagsAdd(uid, [flag]);
+    let flags = await prisma.mail.findUnique({
+        where: {
+            id: uid
+        }
+    }).then(mail => mail?.flags);
+    if (!flags) {
+        flags = [];
+    }
+    flags.push(flag);
+    await prisma.mail.update({
+        where: {
+            id: uid
+        },
+        data: {
+            flags
+        }
+    });
+}
+
+export const removeFlag = async (ws: WebSocket, data: { uid: string, flag: string }) => {
+    const { uid, flag } = data;
+    await client.messageFlagsRemove(uid, [flag]);
+    let flags = await prisma.mail.findUnique({
+        where: {
+            id: uid
+        }
+    }).then(mail => mail?.flags);
+    if (!flags) {
+        flags = [];
+    }
+    flags = flags.filter(f => f !== flag);
+    await prisma.mail.update({
+        where: {
+            id: uid
+        },
+        data: {
+            flags
+        }
+    });
+}
 
 export const handleSendEmail = async (ws: WebSocket, data: any) => {
     const { to, subject, text, cc, bcc, ical, attachments } = data;

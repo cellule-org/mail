@@ -26,14 +26,16 @@ model Thread {
 
 model Mail {
   id        String   @id @default(cuid())
-  labels    String[]
+  labels    String[] @default([])
+  flags     String[] @default([])
   threadId  String
   mailboxId String
   from      String   @default("unknown")
-  to        String[]
+  to        String[] @default([])
+  cc        String[] @default([])
+  bcc       String[] @default([])
   subject   String
   text      String
-  read      Boolean  @default(false)
   date      DateTime @default(now())
   Thread    Thread   @relation(fields: [threadId], references: [id])
   Mailbox   Mailbox  @relation(fields: [mailboxId], references: [id])

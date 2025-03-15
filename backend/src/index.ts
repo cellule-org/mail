@@ -4,7 +4,7 @@ import path from 'path';
 import { WebSocket, WebSocketServer } from 'ws';
 import { existsSync } from 'fs';
 import { connectToWebSocketServer, createWebSocket, messageHandler } from './websocket';
-import { handleSendEmail, handleReceiveEmail, handleReplyEmail } from './email';
+import { handleSendEmail, handleReceiveEmail, handleReplyEmail, addFlag, removeFlag } from './email';
 import { PrismaClient } from '@prisma/client';
 
 const app = express();
@@ -113,6 +113,47 @@ const start = async () => {
                             }));
                         } catch (err) {
                             console.error('Error loading mails:', err);
+                        }
+                        break;
+                    case 'archive':
+                        try {
+                            //TODO: Implement archive mail
+                        } catch (err) {
+                            console.error('Error archiving mail:', err);
+                        }
+                        break;
+                    case 'delete':
+                        try {
+                            await prisma.mail.delete({
+                                where: { id: parsedMessage.data.id },
+                            });
+                            ws.send(JSON.stringify({
+                                type: 'delete_success',
+                                data: { id: parsedMessage.data.id },
+                            }));
+                        } catch (err) {
+                            console.error('Error deleting mail:', err);
+                        }
+                        break;
+                    case 'block':
+                        try {
+                            //TODO: Implement block sender
+                        } catch (err) {
+                            console.error('Error blocking sender:', err);
+                        }
+                        break;
+                    case 'mark_as_read':
+                        try {
+                            addFlag(ws, { uid: parsedMessage.data.id, flag: '\\Seen' });
+                        } catch (err) {
+                            console.error('Error marking mail as read:', err);
+                        }
+                        break;
+                    case 'mark_as_unread':
+                        try {
+                            removeFlag(ws, { uid: parsedMessage.data.id, flag: '\\Seen' });
+                        } catch (err) {
+                            console.error('Error marking mail as unread:', err);
                         }
                         break;
                     default:
