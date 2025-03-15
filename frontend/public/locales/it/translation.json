@@ -17,5 +17,14 @@
     "attachments": "Allegati",
     "search": "Cerca email",
     "body_placeholder": "Scrivi il tuo messaggio qui...",
-    "loading": "Caricamento..."
+    "loading": "Caricamento...",
+    "mark_as_read": "Segna come letto",
+    "mark_as_unread": "Segna come non letto",
+    "archive": "Archivia",
+    "delete": "Elimina",
+    "reply": "Rispondi",
+    "reply_all": "Rispondi a tutti",
+    "forward": "Inoltra",
+    "copy_email": "Copia email",
+    "block": "Blocca"
 }

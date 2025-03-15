@@ -17,5 +17,14 @@
     "attachments": "Adjuntos",
     "search": "Buscar emails",
     "body_placeholder": "Escribe tu mensaje aquí...",
-    "loading": "Cargando..."
+    "loading": "Cargando...",
+    "mark_as_read": "Marcar como leído",
+    "mark_as_unread": "Marcar como no leído",
+    "archive": "Archivar",
+    "delete": "Eliminar",
+    "reply": "Responder",
+    "reply_all": "Responder a todos",
+    "forward": "Reenviar",
+    "copy_email": "Copiar correo",
+    "block": "Bloquear"
 }

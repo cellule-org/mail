@@ -17,5 +17,14 @@
     "attachments": "Anhänge",
     "search": "E-Mails durchsuchen",
     "body_placeholder": "Geben Sie Ihre Nachricht hier ein...",
-    "loading": "Wird geladen..."
+    "loading": "Wird geladen...",
+    "mark_as_read": "Als gelesen markieren",
+    "mark_as_unread": "Als ungelesen markieren",
+    "archive": "Archivieren",
+    "delete": "Löschen",
+    "reply": "Antworten",
+    "reply_all": "Allen antworten",
+    "forward": "Weiterleiten",
+    "copy_email": "E-Mail kopieren",
+    "block": "Blockieren"
 }

@@ -17,5 +17,14 @@
     "attachments": "Attachments",
     "search": "Search emails",
     "body_placeholder": "Type your message here...",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "mark_as_read": "Mark as Read",
+    "mark_as_unread": "Mark as Unread",
+    "archive": "Archive",
+    "delete": "Delete",
+    "reply": "Reply",
+    "reply_all": "Reply All",
+    "forward": "Forward",
+    "copy_email": "Copy Email",
+    "block": "Block"
 }

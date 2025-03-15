@@ -109,13 +109,66 @@ export default function Index() {
     sendMessage({ type: "load_mails", data: { pagination } });
   }
 
+  const handleAction = (email: Email, action: "archive" | "delete" | "block" | "mark_as_read" | "mark_as_unread") => {
+    sendMessage({ type: action, data: { id: email.id } });
+    setEmails((prevEmails) => prevEmails.filter((e) => e.id !== email.id));
+  };
+
   const handleMailClick = (email: Email) => {
+    handleAction(email, "mark_as_read");
     setSelectedMail(email);
   }
 
   const handleNewMail = () => {
     setSelectedMail(null);
   }
+
+  const updateReadStatus = (email: Email, read: boolean) => {
+    handleAction(email, read ? "mark_as_read" : "mark_as_unread");
+    setEmails((prevEmails) =>
+      prevEmails.map((e) => (e.id === email.id ? { ...e, read } : e))
+    );
+  };
+
+  const handleMarkAsRead = (email: Email) => {
+    updateReadStatus(email, true);
+  };
+
+  const handleMarkAsUnread = (email: Email) => {
+    updateReadStatus(email, false);
+  };
+
+
+  const handleArchive = (email: Email) => {
+    handleAction(email, "archive");
+  };
+
+  const handleDelete = (email: Email) => {
+    handleAction(email, "delete");
+  };
+
+  const handleReply = (email: Email) => {
+    setSelectedMail({ ...email, subject: email.subject });
+  };
+
+  const handleReplyAll = (email: Email) => {
+    const recipients = Array.from(
+      new Set([...(email.to || []), ...(email.cc || [])])
+    ).filter((r) => r !== email.from);
+    setSelectedMail({ ...email, subject: email.subject, to: recipients });
+  };
+
+  const handleForward = (email: Email) => {
+    setSelectedMail({ ...email, subject: `Fwd: ${email.subject}` });
+  };
+
+  const handleCopyEmailAddress = (email: Email) => {
+    navigator.clipboard.writeText(email.from);
+  };
+
+  const handleBlock = (email: Email) => {
+    handleAction(email, "block");
+  };
 
   return (
     <section className="flex flex-col items-center justify-between h-screen max-h-screen min-h-screen">
@@ -124,8 +177,23 @@ export default function Index() {
           <EmailNav tags={[]} className="p-4 min-w-fit" onNewMessage={handleNewMail} />
         </ResizablePanel>
         <ResizableHandle withHandle />
-        <ResizablePanel defaultSize={46.25} minSize={25} maxSize={68} className="!overflow-y-auto scrollbar scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900 scrollbar-track-neutral-700">
-          <EmailList locale={getLocaleFromI18n(language)} className="w-full pt-4 px-4" emails={emails} onBottomReached={handleBottomReached} onMailClick={handleMailClick} />
+        <ResizablePanel defaultSize={46.25} minSize={25} maxSize={68} className="!overflow-y-auto scrollbar-thin scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-thumb-neutral-300 scrollbar-track-transparent dark:scrollbar-thumb-neutral-900">
+          <EmailList
+            locale={getLocaleFromI18n(language)}
+            className="w-full pt-4 px-4"
+            emails={emails}
+            onBottomReached={handleBottomReached}
+            onMailClick={handleMailClick}
+            onMarkAsRead={handleMarkAsRead}
+            onMarkAsUnread={handleMarkAsUnread}
+            onArchive={handleArchive}
+            onDelete={handleDelete}
+            onReply={handleReply}
+            onReplyAll={handleReplyAll}
+            onForward={handleForward}
+            onCopyEmailAddress={handleCopyEmailAddress}
+            onBlock={handleBlock}
+          />
         </ResizablePanel>
         <ResizableHandle withHandle />
         <ResizablePanel defaultSize={46.25} minSize={25} maxSize={68} className="!overflow-y-auto">

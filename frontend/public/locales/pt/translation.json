@@ -17,5 +17,14 @@
     "attachments": "Anexos",
     "search": "Procurar emails",
     "body_placeholder": "Digite sua mensagem aqui...",
-    "loading": "Carregando..."
+    "loading": "Carregando...",
+    "mark_as_read": "Marcar como lido",
+    "mark_as_unread": "Marcar como não lido",
+    "archive": "Arquivar",
+    "delete": "Excluir",
+    "reply": "Responder",
+    "reply_all": "Responder a todos",
+    "forward": "Encaminhar",
+    "copy_email": "Copiar email",
+    "block": "Bloquear"
 }

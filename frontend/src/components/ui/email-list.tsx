@@ -13,6 +13,7 @@ import { useSearchParams } from "react-router"
 import { Input } from "./input"
 import { Search } from "lucide-react"
 import { useTranslation } from "react-i18next"
+import { ContextMenu, ContextMenuContent, ContextMenuGroup, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger } from "./context-menu"
 
 export interface Email {
     id: string
@@ -20,13 +21,15 @@ export interface Email {
     to: string[]
     subject: string
     text: string
+    cc?: string[]
+    bcc?: string[]
     attachments?: {
         name: string
         size: number
         type: string
     }[]
     date: string
-    read: boolean
+    flags: string[]
     labels: string[]
     mailboxId: string
     threadId: string
@@ -37,10 +40,36 @@ interface EmailListProps {
     locale: Locale
     onBottomReached: () => void
     onMailClick: (email: Email) => void
+    onMarkAsRead: (email: Email) => void
+    onMarkAsUnread: (email: Email) => void
+    onArchive: (email: Email) => void
+    onDelete: (email: Email) => void
+    onReply: (email: Email) => void
+    onReplyAll: (email: Email) => void
+    onForward: (email: Email) => void
+    onCopyEmailAddress: (email: Email) => void
+    onBlock: (email: Email) => void
     loading?: boolean
 }
 
-export function EmailList({ emails, locale, onBottomReached, onMailClick, loading = false, className, ...props }: EmailListProps & ComponentProps<"section">) {
+export function EmailList({
+    emails,
+    locale,
+    onBottomReached,
+    onMailClick,
+    onMarkAsRead,
+    onMarkAsUnread,
+    onArchive,
+    onDelete,
+    onReply,
+    onReplyAll,
+    onForward,
+    onCopyEmailAddress,
+    onBlock,
+    loading = false,
+    className,
+    ...props
+}: EmailListProps & ComponentProps<"section">) {
     const [mails, setMails] = useState(emails);
 
     const bottomRef = useRef<HTMLDivElement>(null)
@@ -151,40 +180,65 @@ export function EmailList({ emails, locale, onBottomReached, onMailClick, loadin
                 }}
             />
             {mails.map((email) => (
-                <Card key={email.id} className="transition-all py-0 shadow-none cursor-pointer" onClick={() => onMailClick(email)}>
-                    <CardContent className="p-4">
-                        <section className="flex items-start gap-4">
-                            <Avatar className="h-10 w-10 mt-1">
-                                <AvatarFallback>{getInitials(email.from)}</AvatarFallback>
-                            </Avatar>
+                <ContextMenu>
+                    <ContextMenuTrigger>
+                        <Card key={email.id} className="transition-all py-0 shadow-none cursor-pointer" onClick={() => onMailClick(email)}>
+                            <CardContent className="p-4">
+                                <section className="flex items-start gap-4">
+                                    <Avatar className="h-10 w-10 mt-1">
+                                        <AvatarFallback>{getInitials(email.from)}</AvatarFallback>
+                                    </Avatar>
 
-                            <section className="flex-1 space-y-1.5 w-1/2">
-                                <section className="flex items-center justify-between">
-                                    <section className="font-medium">{email.from}</section>
-                                    <section className="text-xs text-muted-foreground">
-                                        {formatDistanceToNow(email.date, { addSuffix: true, locale })}
+                                    <section className="flex-1 space-y-1.5 w-1/2">
+                                        <section className="flex items-center justify-between">
+                                            <section className="font-medium">{email.from}</section>
+                                            <section className="text-xs text-muted-foreground">
+                                                {formatDistanceToNow(email.date, { addSuffix: true, locale })}
+                                            </section>
+                                        </section>
+
+                                        <section className="font-semibold overflow-hidden text-ellipsis whitespace-nowrap">{email.subject}</section>
+
+                                        <section className="text-sm text-muted-foreground overflow-hidden text-ellipsis whitespace-nowrap">{cleanUpHTML(email.text)}</section>
+
+                                        <section className="flex items-center gap-2 pt-1">
+                                            {email.attachments && email.attachments.length > 0 && (
+                                                <Badge variant="outline" className="bg-blue-100 text-blue-800 hover:bg-blue-100">
+                                                    {email.attachments.length} attachment{email.attachments.length > 1 ? "s" : ""}
+                                                </Badge>
+                                            )}
+                                        </section>
                                     </section>
                                 </section>
-
-                                <section className="font-semibold overflow-hidden text-ellipsis whitespace-nowrap">{email.subject}</section>
-
-                                <section className="text-sm text-muted-foreground overflow-hidden text-ellipsis whitespace-nowrap">{cleanUpHTML(email.text)}</section>
-
-                                <section className="flex items-center gap-2 pt-1">
-                                    {email.attachments && email.attachments.length > 0 && (
-                                        <Badge variant="outline" className="bg-blue-100 text-blue-800 hover:bg-blue-100">
-                                            {email.attachments.length} attachment{email.attachments.length > 1 ? "s" : ""}
-                                        </Badge>
-                                    )}
-                                </section>
-                            </section>
-                        </section>
-                    </CardContent>
-                </Card>
+                            </CardContent>
+                        </Card>
+                    </ContextMenuTrigger>
+                    <ContextMenuContent>
+                        <ContextMenuGroup>
+                            <ContextMenuItem onClick={() => onMarkAsRead(email)}>{t("mark_as_read")}</ContextMenuItem>
+                            <ContextMenuItem onClick={() => onMarkAsUnread(email)}>{t("mark_as_unread")}</ContextMenuItem>
+                        </ContextMenuGroup>
+                        <ContextMenuSeparator />
+                        <ContextMenuGroup>
+                            <ContextMenuItem onClick={() => onArchive(email)}>{t("archive")}</ContextMenuItem>
+                            <ContextMenuItem onClick={() => onDelete(email)}>{t("delete")}</ContextMenuItem>
+                        </ContextMenuGroup>
+                        <ContextMenuSeparator />
+                        <ContextMenuGroup>
+                            <ContextMenuItem onClick={() => onReply(email)}>{t("reply")}</ContextMenuItem>
+                            <ContextMenuItem onClick={() => onReplyAll(email)}>{t("reply_all")}</ContextMenuItem>
+                            <ContextMenuItem onClick={() => onForward(email)}>{t("forward")}</ContextMenuItem>
+                        </ContextMenuGroup>
+                        <ContextMenuSeparator />
+                        <ContextMenuGroup>
+                            <ContextMenuItem onClick={() => onCopyEmailAddress(email)}>{t("copy_email")}</ContextMenuItem>
+                            <ContextMenuItem onClick={() => onBlock(email)}>{t("block")}</ContextMenuItem>
+                        </ContextMenuGroup>
+                    </ContextMenuContent>
+                </ContextMenu>
             ))}
             {loading && <section className="py-4 text-center text-sm text-muted-foreground">{t("loading")}</section>}
             <section ref={bottomRef} className="h-4" />
         </section>
     )
 }
-

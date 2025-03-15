@@ -17,5 +17,14 @@
     "attachments": "Pièces jointes",
     "search": "Rechercher des emails",
     "body_placeholder": "Tapez votre message ici...",
-    "loading": "Chargement..."
+    "loading": "Chargement...",
+    "mark_as_read": "Marquer comme lu",
+    "mark_as_unread": "Marquer comme non lu",
+    "archive": "Archiver",
+    "delete": "Supprimer",
+    "reply": "Répondre",
+    "reply_all": "Répondre à tous",
+    "forward": "Transférer",
+    "copy_email": "Copier l'email",
+    "block": "Bloquer"
 }
