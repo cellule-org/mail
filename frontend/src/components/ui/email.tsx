@@ -44,7 +44,7 @@ export default function EmailForm({
         resolver: zodResolver(emailFormSchema),
         defaultValues: {
             to: email ? email.from : "",
-            subject: email ? `Re: ${email.subject}` : "",
+            subject: email ? email.subject : "",
             text: email ? email.text : "",
             cc: "",
             bcc: "",
@@ -56,7 +56,7 @@ export default function EmailForm({
     useEffect(() => {
         form.reset({
             to: email ? email.from : "",
-            subject: email ? `Re: ${email.subject}` : "",
+            subject: email ? email.subject : "",
             text: email ? email.text : "",
             cc: "",
             bcc: "",

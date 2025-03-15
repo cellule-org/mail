@@ -192,8 +192,7 @@ export const handleSendEmail = async (ws: WebSocket, data: any) => {
 export const handleReplyEmail = async (ws: WebSocket, data: any) => {
     const { to, subject, text, cc, bcc, attachments, inReplyTo } = data;
     let formattedAttachments;
-    if (attachments) {
-        console.log('Attachments:', attachments);
+    if (attachments && attachments.length > 0) {
         formattedAttachments = attachments.map((attachment: any) => ({
             filename: attachment.title,
             content: Buffer.from(new Uint8Array(attachment.data.data))
@@ -203,7 +202,9 @@ export const handleReplyEmail = async (ws: WebSocket, data: any) => {
     transporter.sendMail({
         from: process.env.SMTP_USER,
         inReplyTo,
+        references: inReplyTo,
         to,
+        replyTo: to,
         subject,
         html: text,
         cc: cc ? cc : undefined,
