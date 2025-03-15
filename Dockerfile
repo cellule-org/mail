@@ -15,6 +15,8 @@ WORKDIR /app
 RUN cp -r frontend/dist backend/src
 RUN cp -r frontend/public backend/src
 
+RUN rm -rf frontend
+
 WORKDIR /app/backend
 
 RUN npm install
