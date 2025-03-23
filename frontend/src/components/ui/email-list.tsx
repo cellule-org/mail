@@ -1,6 +1,4 @@
-"use client"
-
-import { ComponentProps, useEffect, useRef, useState } from "react"
+import { ComponentProps, useEffect, useMemo, useRef, useState } from "react"
 
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -16,7 +14,7 @@ import { useTranslation } from "react-i18next"
 import { ContextMenu, ContextMenuContent, ContextMenuGroup, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger } from "./context-menu"
 
 export interface Email {
-    id: string
+    mailId: string
     from: string
     to: string[]
     subject: string
@@ -70,28 +68,21 @@ export function EmailList({
     className,
     ...props
 }: EmailListProps & ComponentProps<"section">) {
-    const [mails, setMails] = useState(emails);
-
     const bottomRef = useRef<HTMLDivElement>(null)
-
-    const [mailboxes, setMailboxes] = useState(() => JSON.parse(sessionStorage.getItem('mailboxes') || '{}'));
-
-    const { t } = useTranslation();
+    const [mailboxes, setMailboxes] = useState(() => JSON.parse(sessionStorage.getItem('mailboxes') || '{}'))
+    const { t } = useTranslation()
 
     useEffect(() => {
         const handleStorageChange = () => {
-            setMailboxes(JSON.parse(sessionStorage.getItem('mailboxes') || '{}'));
-        };
-
-        window.addEventListener('storage', handleStorageChange);
-
+            setMailboxes(JSON.parse(sessionStorage.getItem('mailboxes') || '{}'))
+        }
+        window.addEventListener('storage', handleStorageChange)
         return () => {
-            window.removeEventListener('storage', handleStorageChange);
-        };
-    }, []);
+            window.removeEventListener('storage', handleStorageChange)
+        }
+    }, [])
 
-
-    const [searchParams, setSearchParams] = useSearchParams();
+    const [searchParams, setSearchParams] = useSearchParams()
 
     useEffect(() => {
         const observer = new IntersectionObserver(
@@ -100,13 +91,11 @@ export function EmailList({
                     onBottomReached()
                 }
             },
-            { threshold: 0.5 },
+            { threshold: 0.5 }
         )
-
         if (bottomRef.current) {
             observer.observe(bottomRef.current)
         }
-
         return () => {
             if (bottomRef.current) {
                 observer.unobserve(bottomRef.current)
@@ -119,13 +108,13 @@ export function EmailList({
             .parseFromString(
                 html.replace(/<head(?:[\s\S]*?)<\/head>/gi, "").replace(/<style(?:[\s\S]*?)<\/style>/gi, ""),
                 "text/html"
-            ).body.textContent || "";
-        content = content.replace(/&zwnj;/g, " ").replace(/&nbsp;/g, " ");
-        content = content.trim();
-        content = content.replace(/\s\s+/g, " ");
-        content = content.replace(/\n/g, " ");
-        return content;
-    };
+            ).body.textContent || ""
+        content = content.replace(/&zwnj;/g, " ").replace(/&nbsp;/g, " ")
+        content = content.trim()
+        content = content.replace(/\s\s+/g, " ")
+        content = content.replace(/\n/g, " ")
+        return content
+    }
 
     const getInitials = (name: string) => {
         return name
@@ -136,53 +125,50 @@ export function EmailList({
             .substring(0, 2)
     }
 
-    const filterEmails = (emails: Email[], mailbox: string | null, search: string | null) => {
-        return emails.filter(email => {
-            return mailbox ? email.mailboxId === mailbox : (mailboxes.TRASH ? email.mailboxId === mailboxes.TRASH : true);
-        }).map(email => {
-            let score = 0;
-
-            if (search) {
-                const searchLower = search.toLowerCase();
-                if (email.from.toLowerCase().includes(searchLower)) score += 4;
-                if (email.subject.toLowerCase().includes(searchLower)) score += 3;
-                if (email.text.toLowerCase().includes(searchLower)) score += 2;
-            }
-
-            return { ...email, score };
-        }).filter(email => {
-            if (!search) return true;
-            return email.score > 0
-        })
+    const filteredEmails = useMemo(() => {
+        return emails
+            .filter(email => {
+                return searchParams.get('mailbox')
+                    ? email.mailboxId === searchParams.get('mailbox')
+                    : (mailboxes.TRASH ? email.mailboxId === mailboxes.TRASH : true)
+            })
+            .map(email => {
+                let score = 0
+                if (searchParams.get('search')) {
+                    const searchLower = searchParams.get('search')!.toLowerCase()
+                    if (email.from.toLowerCase().includes(searchLower)) score += 4
+                    if (email.subject.toLowerCase().includes(searchLower)) score += 3
+                    if (email.text.toLowerCase().includes(searchLower)) score += 2
+                }
+                return { ...email, score }
+            })
+            .filter(email => {
+                if (!searchParams.get('search')) return true
+                return email.score > 0
+            })
             .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
             .sort((a, b) => {
-                if (!search) return 0;
-                return b.score - a.score;
-            });
-    }
-
-    useEffect(() => {
-        console.log('emails', emails);
-        console.log('searchParams', searchParams);
-        setMails(filterEmails(emails, searchParams.get('mailbox'), searchParams.get('search')));
-    }, [emails, searchParams.get('mailbox'), searchParams.get('search')])
+                if (!searchParams.get('search')) return 0
+                return b.score - a.score
+            })
+    }, [emails, searchParams, mailboxes])
 
     return (
-        <section key={`mailbox-${searchParams.get('mailbox')}`} className={cn("w-full space-y-2", className)} {...props}>
+        <section key={`mailbox-${searchParams.get('mailbox')}`} className={cn("w-full flex flex-col gap-2", className)} {...props}>
             <Input
                 prefixIcon={<Search size={16} />}
                 placeholder={t("search")}
                 value={searchParams.get('search') || ""}
                 onChange={(e) => {
-                    const newParams = new URLSearchParams(searchParams);
-                    newParams.set('search', e.target.value);
-                    setSearchParams(newParams);
+                    const newParams = new URLSearchParams(searchParams)
+                    newParams.set('search', e.target.value)
+                    setSearchParams(newParams)
                 }}
             />
-            {mails.map((email) => (
-                <ContextMenu>
+            {filteredEmails.map((email) => (
+                <ContextMenu key={email.mailId}>
                     <ContextMenuTrigger>
-                        <Card key={email.id} className="transition-all py-0 shadow-none cursor-pointer" onClick={() => onMailClick(email)}>
+                        <Card className="transition-all py-0 shadow-none cursor-pointer" onClick={() => onMailClick(email)}>
                             <CardContent className="p-4">
                                 <section className="flex items-start gap-4">
                                     <Avatar className="h-10 w-10 mt-1">
@@ -197,9 +183,13 @@ export function EmailList({
                                             </section>
                                         </section>
 
-                                        <section className="font-semibold overflow-hidden text-ellipsis whitespace-nowrap">{email.subject}</section>
+                                        <section className={cn("overflow-hidden text-ellipsis whitespace-nowrap", !email.flags.includes("\\Seen") ? "font-semibold" : "font-normal")}>
+                                            {email.subject}
+                                        </section>
 
-                                        <section className="text-sm text-muted-foreground overflow-hidden text-ellipsis whitespace-nowrap">{cleanUpHTML(email.text)}</section>
+                                        <section className="text-sm text-muted-foreground overflow-hidden text-ellipsis whitespace-nowrap">
+                                            {cleanUpHTML(email.text)}
+                                        </section>
 
                                         <section className="flex items-center gap-2 pt-1">
                                             {email.attachments && email.attachments.length > 0 && (
