@@ -21,7 +21,6 @@ export const messageHandler = async (message: RawData) => {
             });
             break;
         case 'message':
-            //console.log('Received message:', parsedMessage.data);
             break;
         default:
             if (parsedMessage.type) console.warn(`core: Unknown message type: ${parsedMessage.type}`);
@@ -50,7 +49,7 @@ export const connectToWebSocketServer = async (url: string, retries: number = 50
             });
 
             ws.on('close', () => {
-                //console.log('WebSocket connection closed');
+                setTimeout(() => attempt(retryCount - 1), delay);
             });
         };
 

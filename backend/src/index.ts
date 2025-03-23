@@ -104,11 +104,6 @@ const handleMessage = async (ws: WebSocket, message: RawData): Promise<void> => 
         }
     }
 
-    console.log('Received message:')
-    console.log(parsedMessage);
-    console.log('  - Type:', type);
-    console.log('  - Data:', data);
-
     switch (type) {
         case 'user_auth':
             await handleUserAuth(ws, data);
@@ -145,7 +140,6 @@ const parseMessage = (message: RawData): { type: string, data: any } | null => {
 };
 
 const handleUserAuth = async (ws: WebSocket, { accessToken }: { accessToken: string }): Promise<void> => {
-    console.log('User authenticated:', accessToken);
     const jwtObject = jwt.decode(accessToken) as { id: string } | null;
     if (!jwtObject) return;
 
@@ -218,7 +212,6 @@ const safeExecute = (func: Function, description: string): void => {
 };
 
 const sendInitialData = async (ws: WebSocket, user_id: string) => {
-    console.log('Sending initial data to user:', user_id);
     let user = await prisma.user.findUnique({ where: { id: user_id }, include: { mailboxes: true } });
     if (!user || !user.mailboxes) return;
     sendData(ws, 'mailboxes_variables', {

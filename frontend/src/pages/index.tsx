@@ -110,9 +110,7 @@ export default function Index() {
   }, [navigate, getCookie]);
 
   useEffect(() => {
-    console.log("Check to sent user_auth message");
     if (getCookie("accessToken")) {
-      console.log("Sending user_auth message");
       let accessToken = getCookie("accessToken");
       let refreshToken = getCookie("refreshToken");
       sendMessage({ type: "user_auth", data: { accessToken, refreshToken } });

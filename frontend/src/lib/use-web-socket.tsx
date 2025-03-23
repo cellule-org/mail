@@ -91,7 +91,6 @@ export function useWebSocket({
     }, [url, protocols, reconnectAttempts, reconnectInterval, onOpen, onClose, onError, onMessage]);
 
     const sendMessage = useCallback((message: WebSocketMessage) => {
-        console.log('Sending message:', message);
         if (webSocketRef.current && webSocketRef.current.readyState === WebSocket.OPEN) {
             const token = getCookie("accessToken");
             const messageWithAuth = { ...message, auth: { accessToken: token } };
