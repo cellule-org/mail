@@ -9,7 +9,7 @@ services:
         condition: service_healthy
     environment:
       DATABASE_URL: postgres://postgres:password@mail-db:5432/maildb
-      # Use this if the core and mail servers are on the same machine.
+      # Use this if the core and mail servers are on the same machine and the core service name is "core-app".
       # Otherwise, replace "core-app" with your core server's URL or domain name.
       CORE_WS_URL: ws://core-app:3000
       CORE_LOCAL_URL: http://localhost:3000
