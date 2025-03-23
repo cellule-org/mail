@@ -1,14 +1,31 @@
 import { RawData, WebSocket, WebSocketServer } from 'ws';
 import { Server } from 'http';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
+
+interface User {
+    id: string;
+    username: string;
+}
+
 
 export const messageHandler = async (message: RawData) => {
     const parsedMessage = JSON.parse(message.toString());
     switch (parsedMessage.type) {
+        case "core_users":
+            let data = parsedMessage.users as User[];
+            await prisma.user.createMany({
+                data: data,
+                skipDuplicates: true,
+            });
+            break;
         case 'message':
             //console.log('Received message:', parsedMessage.data);
             break;
         default:
-            console.warn(`core: Unknown message type: ${parsedMessage.type}`);
+            if (parsedMessage.type) console.warn(`core: Unknown message type: ${parsedMessage.type}`);
+            else console.warn('core: Unknown message:', parsedMessage);
     }
 }
 

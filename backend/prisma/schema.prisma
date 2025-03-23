@@ -13,6 +13,45 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id        String     @id
+  username  String     @unique
+  smtp      SMTP?
+  imap      IMAP?
+  mailboxes Mailboxes?
+  mails     Mail[]
+}
+
+model SMTP {
+  id       String  @id @default(cuid())
+  host     String
+  port     Int
+  username String
+  password String
+  secure   Boolean
+  User     User    @relation(fields: [id], references: [id])
+}
+
+model IMAP {
+  id       String  @id @default(cuid())
+  host     String
+  port     Int
+  username String
+  password String
+  secure   Boolean
+  User     User    @relation(fields: [id], references: [id])
+}
+
+model Mailboxes {
+  id     String @id @default(cuid())
+  inbox  String
+  sent   String
+  drafts String
+  trash  String
+  spam   String
+  User   User   @relation(fields: [id], references: [id])
+}
+
 model Mailbox {
   id   String @id
   name String
@@ -25,7 +64,8 @@ model Thread {
 }
 
 model Mail {
-  id        String   @id @default(cuid())
+  mailId    String   @default(cuid())
+  userId    String
   labels    String[] @default([])
   flags     String[] @default([])
   threadId  String
@@ -37,6 +77,10 @@ model Mail {
   subject   String
   text      String
   date      DateTime @default(now())
-  Thread    Thread   @relation(fields: [threadId], references: [id])
-  Mailbox   Mailbox  @relation(fields: [mailboxId], references: [id])
+
+  Thread  Thread  @relation(fields: [threadId], references: [id])
+  Mailbox Mailbox @relation(fields: [mailboxId], references: [id])
+  User    User    @relation(fields: [userId], references: [id])
+
+  @@id(name: "id", [mailId, userId])
 }

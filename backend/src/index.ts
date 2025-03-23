@@ -1,27 +1,40 @@
 import express, { Request, Response, NextFunction } from 'express';
 import { createServer } from 'http';
 import path from 'path';
-import { WebSocket, WebSocketServer } from 'ws';
+import { RawData, WebSocket, WebSocketServer } from 'ws';
 import { existsSync } from 'fs';
 import { connectToWebSocketServer, createWebSocket, messageHandler } from './websocket';
-import { handleSendEmail, handleReceiveEmail, handleReplyEmail, addFlag, removeFlag } from './email';
+import { handleSendEmail, handleReceiveEmail, addFlag, removeFlag, createTransporter, createImapFlow } from './email';
 import { PrismaClient } from '@prisma/client';
+import jwt from 'jsonwebtoken';
+import settingsRouter from './api/settings'; // ajout de l'import du router settings
+import { Transporter } from 'nodemailer';
+import SMTPTransport from 'nodemailer/lib/smtp-transport';
+import { ImapFlow } from 'imapflow';
 
 const app = express();
+
+app.use('/api/settings', settingsRouter);
+
 const server = createServer(app);
 
 const prisma = new PrismaClient();
 
+interface UserConnections {
+    transporter: Transporter<SMTPTransport.SentMessageInfo, SMTPTransport.Options>;
+    imap_flow: ImapFlow;
+}
+
+
+export const userConnections = new Map<string, UserConnections>();
+export const websocketToUserId = new Map<WebSocket, string>();
+
 let core_ws: WebSocket | null = null;
-let mail_ws: WebSocketServer | null = null;
+export let mail_ws: WebSocketServer | null = null;
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     console.error('Request error:', err);
     res.status(500).send({ error: 'Internal Server Error' });
-});
-
-app.get("/", (req: Request, res: Response) => {
-    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
 app.get("/assets/:filename", (req: Request, res: Response) => {
@@ -44,160 +57,28 @@ app.get("/locales/:lng/translation.json", (req: Request, res: Response) => {
     res.sendFile(filePath);
 });
 
-const start = async () => {
+app.get('*', (req: Request, res: Response) => {
+    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+});
+
+const initializeWebSocket = async (): Promise<void> => {
     try {
-        core_ws = await connectToWebSocketServer(process.env.CORE_WS_URL || 'ws://core-app:3000');
-        if (!core_ws) {
-            throw new Error('Failed to connect to core WebSocket server');
-        }
-        mail_ws = createWebSocket(server) as WebSocketServer;
-        handleReceiveEmail();
-        mail_ws.on('connection', async (ws) => {
+        const core_ws = await connectToWebSocketServer(process.env.CORE_WS_URL || 'ws://core-app:3000');
+        if (!core_ws) throw new Error('Failed to connect to core WebSocket server');
 
-            ws.send(JSON.stringify({
-                type: 'mailboxes_variables',
-                data: {
-                    INBOX: process.env.INBOX || 'INBOX',
-                    SENT: process.env.SENT || 'SENT',
-                    DRAFTS: process.env.DRAFTS || 'DRAFTS',
-                    TRASH: process.env.TRASH || 'TRASH',
-                    SPAM: process.env.SPAM || 'SPAM',
-                },
-            }));
+        const mail_ws = createWebSocket(server) as WebSocketServer;
 
-            let mails = await prisma.mail.findMany({
-                take: 20,
-                orderBy: {
-                    date: 'desc',
-                },
-            });
+        mail_ws.on('connection', (ws: WebSocket) => handleConnection(ws));
 
-            ws.send(JSON.stringify({
-                type: 'load_mails',
-                data: mails,
-            }));
+        registerCoreEvents(core_ws);
 
-            ws.on('message', async (message) => {
-                const parsedMessage = JSON.parse(message.toString());
-                if (!core_ws) { // Can't happen, but TypeScript doesn't know that
-                    return;
-                }
-                switch (parsedMessage.type) {
-                    case 'send_email':
-                        try {
-                            handleSendEmail(ws, parsedMessage.data);
-                        } catch (err) {
-                            console.error('Error sending email:', err);
-                        }
-                        break;
-                    case 'reply_email':
-                        try {
-                            handleReplyEmail(ws, parsedMessage.data);
-                        } catch (err) {
-                            console.error('Error replying to email:', err);
-                        }
-                        break;
-                    case 'load_mails':
-                        try {
-                            const pagination = parseInt(parsedMessage.data.pagination, 10) || 0;
-                            const mails = await prisma.mail.findMany({
-                                take: 20,
-                                skip: 20 * pagination,
-                                orderBy: {
-                                    date: 'desc',
-                                },
-                            });
-                            ws.send(JSON.stringify({
-                                type: 'load_mails',
-                                data: mails,
-                            }));
-                        } catch (err) {
-                            console.error('Error loading mails:', err);
-                        }
-                        break;
-                    case 'archive':
-                        try {
-                            //TODO: Implement archive mail
-                        } catch (err) {
-                            console.error('Error archiving mail:', err);
-                        }
-                        break;
-                    case 'delete':
-                        try {
-                            await prisma.mail.delete({
-                                where: { id: parsedMessage.data.id },
-                            });
-                            ws.send(JSON.stringify({
-                                type: 'delete_success',
-                                data: { id: parsedMessage.data.id },
-                            }));
-                        } catch (err) {
-                            console.error('Error deleting mail:', err);
-                        }
-                        break;
-                    case 'block':
-                        try {
-                            //TODO: Implement block sender
-                        } catch (err) {
-                            console.error('Error blocking sender:', err);
-                        }
-                        break;
-                    case 'mark_as_read':
-                        try {
-                            addFlag(ws, { uid: parsedMessage.data.id, flag: '\\Seen' });
-                        } catch (err) {
-                            console.error('Error marking mail as read:', err);
-                        }
-                        break;
-                    case 'mark_as_unread':
-                        try {
-                            removeFlag(ws, { uid: parsedMessage.data.id, flag: '\\Seen' });
-                        } catch (err) {
-                            console.error('Error marking mail as unread:', err);
-                        }
-                        break;
-                    default:
-                        console.warn(`mail: Unknown message type: ${parsedMessage.type}`);
-                }
-            });
-        });
-
-        core_ws.send(JSON.stringify({
-            type: "create",
-            data: {
-                id: "send_email",
-                name: "Send Email",
-            }
-        }));
-
-        core_ws.send(JSON.stringify({
-            type: "create",
-            data: {
-                id: "receive_email",
-                name: "Receive Email",
-            }
-        }));
-
-        core_ws.on('message', (message) => {
-            messageHandler(message);
-        });
-
-        core_ws.on('close', () => {
-            console.log('WebSocket connection closed, clearing event and restarting...');
-            if (core_ws) {
-                core_ws.removeAllListeners();
-            }
-            server.close();
-            start();
-        });
+        core_ws.on('message', messageHandler);
+        core_ws.on('close', handleWebSocketClose);
 
         try {
-            server.listen(3002, () => {
-                console.log('Server is running on http://localhost:3002');
-                console.log('WebSocket server is running on ws://localhost:3002');
-            });
+            startServer();
         } catch (err) {
-            //Do nothing
+            //the server is already running
         }
     } catch (err) {
         console.error(err);
@@ -205,4 +86,171 @@ const start = async () => {
     }
 };
 
-start();
+const handleConnection = async (ws: WebSocket): Promise<void> => {
+    console.log('(MailWS) - New WebSocket connection');
+    const mails = await prisma.mail.findMany({ take: 20, orderBy: { date: 'desc' } });
+    sendData(ws, 'load_mails', mails);
+    ws.on('message', (message: RawData) => handleMessage(ws, message));
+};
+
+const handleMessage = async (ws: WebSocket, message: RawData): Promise<void> => {
+    const parsedMessage = parseMessage(message);
+    if (!parsedMessage) return;
+    let { type, data } = parsedMessage;
+    if (data.auth && data.auth.accessToken) {
+        const decodedToken = jwt.decode(data.auth.accessToken) as { id: string } | null;
+        if (decodedToken?.id) {
+            data.userId = decodedToken.id;
+        }
+    }
+
+    console.log('Received message:')
+    console.log(parsedMessage);
+    console.log('  - Type:', type);
+    console.log('  - Data:', data);
+
+    switch (type) {
+        case 'user_auth':
+            await handleUserAuth(ws, data);
+            break;
+        case 'send_email':
+            safeExecute(() => handleSendEmail(ws, data, false), 'sending email');
+            break;
+        case 'reply_email':
+            safeExecute(() => handleSendEmail(ws, data, true), 'replying to email');
+            break;
+        case 'load_mails':
+            loadMails(ws, data.pagination);
+            break;
+        case 'delete':
+            deleteMail(ws, data.id);
+            break;
+        case 'mark_as_read':
+            modifyFlag(ws, data.id, data.userId, '\\Seen', addFlag);
+            break;
+        case 'mark_as_unread':
+            modifyFlag(ws, data.id, data.userId, '\\Seen', removeFlag);
+            break;
+        default:
+            console.warn(`Unknown message type: ${type}`);
+    }
+};
+
+const parseMessage = (message: RawData): { type: string, data: any } | null => {
+    try {
+        return JSON.parse(message.toString());
+    } catch {
+        return null;
+    }
+};
+
+const handleUserAuth = async (ws: WebSocket, { accessToken }: { accessToken: string }): Promise<void> => {
+    console.log('User authenticated:', accessToken);
+    const jwtObject = jwt.decode(accessToken) as { id: string } | null;
+    if (!jwtObject) return;
+
+    const { id } = jwtObject;
+    const userConfig = await prisma.user.findUnique({ where: { id }, include: { imap: true, smtp: true } });
+
+    if (!userConfig?.imap || !userConfig?.smtp) {
+        sendData(ws, 'missing_mail_config', { imap: !userConfig?.imap, smtp: !userConfig?.smtp });
+    } else {
+        sendInitialData(ws, id);
+        if (userConnections.has(id)) {
+            return;
+        }
+        userConnections.set(id, { transporter: createTransporter(userConfig.smtp), imap_flow: createImapFlow(userConfig.imap) });
+        ws.send(JSON.stringify({
+            type: 'message',
+            data: {
+                type: 'info',
+                title: 'Initiating email sync',
+                message: 'Please wait while we sync your emails...'
+            }
+        }));
+        await handleReceiveEmail(id);
+        ws.send(JSON.stringify({
+            type: 'message',
+            data: {
+                type: 'success',
+                title: 'Email sync complete',
+                message: 'Your emails have been synced successfully.'
+            }
+        }));
+    }
+};
+
+const loadMails = async (ws: WebSocket, pagination = 0): Promise<void> => {
+    const mails = await prisma.mail.findMany({ take: 20, skip: 20 * pagination, orderBy: { date: 'desc' } });
+    sendData(ws, 'load_mails', mails);
+};
+
+const deleteMail = async (ws: WebSocket, id: string): Promise<void> => {
+    let user_id = websocketToUserId.get(ws);
+    if (!user_id) {
+        return;
+    }
+    try {
+        await prisma.mail.delete({
+            where: {
+                id: {
+                    mailId: id,
+                    userId: user_id
+                }
+            }
+        });
+        sendData(ws, 'delete_success', { id });
+    } catch (err) {
+        console.error('Error deleting mail:', err);
+    }
+};
+
+const modifyFlag = (ws: WebSocket, uid: string, user_id: string, flag: string, action: Function): void => {
+    safeExecute(() => action(ws, { uid, user_id, flag }), `modifying flag: ${flag}`);
+};
+
+const safeExecute = (func: Function, description: string): void => {
+    try {
+        func();
+    } catch (err) {
+        console.error(`Error ${description}:`, err);
+    }
+};
+
+const sendInitialData = async (ws: WebSocket, user_id: string) => {
+    console.log('Sending initial data to user:', user_id);
+    let user = await prisma.user.findUnique({ where: { id: user_id }, include: { mailboxes: true } });
+    if (!user || !user.mailboxes) return;
+    sendData(ws, 'mailboxes_variables', {
+        INBOX: user.mailboxes.inbox,
+        SENT: user.mailboxes.sent,
+        DRAFTS: user.mailboxes.drafts,
+        TRASH: user.mailboxes.trash,
+        SPAM: user.mailboxes.spam
+    });
+};
+
+const sendData = (ws: WebSocket, type: string, data: any): void => {
+    ws.send(JSON.stringify({ type, data }));
+};
+
+const registerCoreEvents = (core_ws: WebSocket): void => {
+    ['send_email', 'receive_email'].forEach((id) => {
+        core_ws.send(JSON.stringify({ type: 'create', data: { id, name: id.replace('_', ' ').toUpperCase() } }));
+    });
+};
+
+const handleWebSocketClose = (): void => {
+    console.log('WebSocket connection closed, clearing event and restarting...');
+    initializeWebSocket();
+};
+
+const startServer = (): void => {
+    server.listen(3002, () => {
+        console.log('Server is running on http://localhost:3002');
+        console.log('WebSocket server is running on ws://localhost:3002');
+    });
+};
+
+initializeWebSocket();
+
