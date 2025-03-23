@@ -26,5 +26,47 @@
     "reply_all": "Responder a todos",
     "forward": "Encaminhar",
     "copy_email": "Copiar email",
-    "block": "Bloquear"
+    "block": "Bloquear",
+    "login_title": "Entrar",
+    "login_description": "Faça login para acessar sua conta",
+    "redirect_info": "Você será redirecionado para a página central de autenticação",
+    "login_button": "Entrar",
+    "smtp_form": {
+        "host": "Servidor",
+        "host_description": "Nome do servidor SMTP",
+        "port": "Porta",
+        "port_description": "Portas comuns: 25, 465, 587, 2525",
+        "username": "Nome de usuário",
+        "password": "Senha",
+        "secure_label": "Usar conexão segura (TLS/SSL)",
+        "secure_description": "Ative para conexões seguras nas portas 465 ou 587",
+        "submit": "Salvar configuração SMTP",
+        "saving": "Salvando..."
+    },
+    "imap_form": {
+        "host": "Servidor",
+        "host_description": "Nome do servidor IMAP",
+        "port": "Porta",
+        "port_description": "Portas comuns: 143, 993 (SSL)",
+        "username": "Nome de usuário",
+        "password": "Senha",
+        "secure_label": "Usar conexão segura (SSL/TLS)",
+        "secure_description": "Ative para conexões seguras na porta 993",
+        "submit": "Salvar configuração IMAP",
+        "saving": "Salvando..."
+    },
+    "mailboxes_form": {
+        "inbox": "Caixa de entrada",
+        "inbox_description": "Digite o nome da sua caixa de entrada.",
+        "sent": "Enviados",
+        "sent_description": "Digite o nome da sua caixa de enviados.",
+        "drafts": "Rascunhos",
+        "drafts_description": "Digite o nome dos seus rascunhos.",
+        "trash": "Lixeira",
+        "trash_description": "Digite o nome da lixeira.",
+        "spam": "Spam",
+        "spam_description": "Digite o nome do spam.",
+        "submit": "Salvar configuração das caixas",
+        "saving": "Salvando..."
+    }
 }

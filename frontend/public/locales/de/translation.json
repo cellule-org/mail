@@ -26,5 +26,47 @@
     "reply_all": "Allen antworten",
     "forward": "Weiterleiten",
     "copy_email": "E-Mail kopieren",
-    "block": "Blockieren"
+    "block": "Blockieren",
+    "login_title": "Anmeldung",
+    "login_description": "Melden Sie sich an, um auf Ihr Konto zuzugreifen",
+    "redirect_info": "Sie werden zur zentralen Authentifizierungsseite weitergeleitet",
+    "login_button": "Anmelden",
+    "smtp_form": {
+        "host": "Host",
+        "host_description": "Der Hostname Ihres SMTP-Servers",
+        "port": "Port",
+        "port_description": "Übliche Ports: 25, 465, 587, 2525",
+        "username": "Benutzername",
+        "password": "Passwort",
+        "secure_label": "Sichere Verbindung verwenden (TLS/SSL)",
+        "secure_description": "Aktivieren für sichere Verbindungen über Port 465 oder 587",
+        "submit": "SMTP-Konfiguration speichern",
+        "saving": "Wird gespeichert..."
+    },
+    "imap_form": {
+        "host": "Host",
+        "host_description": "Der Hostname Ihres IMAP-Servers",
+        "port": "Port",
+        "port_description": "Übliche Ports: 143, 993 (SSL)",
+        "username": "Benutzername",
+        "password": "Passwort",
+        "secure_label": "Sichere Verbindung verwenden (SSL/TLS)",
+        "secure_description": "Aktivieren für sichere Verbindungen über Port 993",
+        "submit": "IMAP-Konfiguration speichern",
+        "saving": "Wird gespeichert..."
+    },
+    "mailboxes_form": {
+        "inbox": "Posteingang",
+        "inbox_description": "Geben Sie den Namen Ihres Posteingangs ein.",
+        "sent": "Gesendet",
+        "sent_description": "Geben Sie den Namen Ihres Ordners für gesendete E-Mails ein.",
+        "drafts": "Entwürfe",
+        "drafts_description": "Geben Sie den Namen Ihres Ordners für Entwürfe ein.",
+        "trash": "Papierkorb",
+        "trash_description": "Geben Sie den Namen Ihres Papierkorbs ein.",
+        "spam": "Spam",
+        "spam_description": "Geben Sie den Namen Ihres Spam-Ordners ein.",
+        "submit": "Mailboxes-Konfiguration speichern",
+        "saving": "Wird gespeichert..."
+    }
 }

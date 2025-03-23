@@ -26,5 +26,47 @@
     "reply_all": "Rispondi a tutti",
     "forward": "Inoltra",
     "copy_email": "Copia email",
-    "block": "Blocca"
+    "block": "Blocca",
+    "login_title": "Accesso",
+    "login_description": "Effettua l'accesso per accedere al tuo account",
+    "redirect_info": "Verrai reindirizzato alla pagina centrale di autenticazione",
+    "login_button": "Accedi",
+    "smtp_form": {
+        "host": "Host",
+        "host_description": "Nome host del server SMTP",
+        "port": "Porta",
+        "port_description": "Porte comuni: 25, 465, 587, 2525",
+        "username": "Nome utente",
+        "password": "Password",
+        "secure_label": "Usa connessione sicura (TLS/SSL)",
+        "secure_description": "Abilita per connessioni sicure sulle porte 465 o 587",
+        "submit": "Salva configurazione SMTP",
+        "saving": "Salvataggio..."
+    },
+    "imap_form": {
+        "host": "Host",
+        "host_description": "Nome host del server IMAP",
+        "port": "Porta",
+        "port_description": "Porte comuni: 143, 993 (SSL)",
+        "username": "Nome utente",
+        "password": "Password",
+        "secure_label": "Usa connessione sicura (SSL/TLS)",
+        "secure_description": "Abilita per connessioni sicure sulla porta 993",
+        "submit": "Salva configurazione IMAP",
+        "saving": "Salvataggio..."
+    },
+    "mailboxes_form": {
+        "inbox": "Posta in arrivo",
+        "inbox_description": "Inserisci il nome della tua posta in arrivo.",
+        "sent": "Inviati",
+        "sent_description": "Inserisci il nome della tua posta inviata.",
+        "drafts": "Bozze",
+        "drafts_description": "Inserisci il nome delle tue bozze.",
+        "trash": "Cestino",
+        "trash_description": "Inserisci il nome del cestino.",
+        "spam": "Spam",
+        "spam_description": "Inserisci il nome dello spam.",
+        "submit": "Salva configurazione delle caselle",
+        "saving": "Salvataggio..."
+    }
 }
