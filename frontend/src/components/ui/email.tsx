@@ -78,7 +78,7 @@ export default function EmailForm({
 
             const emailData = {
                 ...data,
-                inReplyTo: email ? email.id : undefined,
+                inReplyTo: email ? email.mailId : undefined,
                 attachments: formattedAttachments,
             }
 
