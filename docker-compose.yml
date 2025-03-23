@@ -9,19 +9,12 @@ services:
         condition: service_healthy
     environment:
       DATABASE_URL: postgres://postgres:password@mail-db:5432/maildb
+      # Use this if the core and mail servers are on the same machine.
+      # Otherwise, replace "core-app" with your core server's URL or domain name.
       CORE_WS_URL: ws://core-app:3000
+      CORE_LOCAL_URL: http://localhost:3000
+      CORE_PUBLIC_URL: http://localhost:3000 # If you have a domain name or something, you can put it here (e.g. https://core.cellules.io)
 
-      SMTP_HOST: smtp.example.com
-      SMTP_PORT: 465
-      SMTP_TLS: true
-      SMTP_USER: mail@example.com
-      SMTP_PASS: password
-
-      IMAP_HOST: imap.example.com
-      IMAP_PORT: 993
-      IMAP_TLS: true
-      IMAP_USER: mail@example.com
-      IMAP_PASS: password
     networks:
       - cellule
 
@@ -39,13 +32,14 @@ services:
     networks:
       - cellule
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 10s
       timeout: 5s
       retries: 5
 
 volumes:
   postgres_data:
+
 
 networks:
   cellule:
