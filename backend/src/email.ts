@@ -274,6 +274,7 @@ export const removeFlag = async (ws: WebSocket, data: { uid: string, user_id: st
 }
 
 export const handleSendEmail = async (ws: WebSocket, data: any, isResponse: boolean) => {
+    console.log('Sending email:', data);
     let user_id = data.userId;
     if (!user_id) {
         return;
