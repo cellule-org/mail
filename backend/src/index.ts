@@ -96,9 +96,9 @@ const handleConnection = async (ws: WebSocket): Promise<void> => {
 const handleMessage = async (ws: WebSocket, message: RawData): Promise<void> => {
     const parsedMessage = parseMessage(message);
     if (!parsedMessage) return;
-    let { type, data } = parsedMessage;
-    if (data.auth && data.auth.accessToken) {
-        const decodedToken = jwt.decode(data.auth.accessToken) as { id: string } | null;
+    let { type, data, auth } = parsedMessage;
+    if (auth && auth.accessToken) {
+        const decodedToken = jwt.decode(auth.accessToken) as { id: string } | null;
         if (decodedToken?.id) {
             data.userId = decodedToken.id;
         }
@@ -131,7 +131,7 @@ const handleMessage = async (ws: WebSocket, message: RawData): Promise<void> => 
     }
 };
 
-const parseMessage = (message: RawData): { type: string, data: any } | null => {
+const parseMessage = (message: RawData): { type: string, data: any, auth: { accessToken: string | null } | null } | null => {
     try {
         return JSON.parse(message.toString());
     } catch {
