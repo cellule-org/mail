@@ -18,6 +18,11 @@ import * as locales from 'date-fns/locale';
 
 type LocaleKey = keyof typeof locales;
 
+function getCookie(name: string) {
+  const v = document.cookie.match("(^|;) ?" + name + "=([^;]*)(;|$)");
+  return v ? v[2] : null;
+}
+
 export default function Index() {
   const { i18n } = useTranslation();
   const language = i18n.language;
@@ -43,31 +48,37 @@ export default function Index() {
   }
 
   const [pagination, setPagination] = useState(0);
-  const { sendMessage } = useWebSocketContext();
+  const { sendMessage, status } = useWebSocketContext();
 
   const [emails, setEmails] = useState<Email[]>([]);
   const [loading, setLoading] = useState(false);
 
   const [selectedMail, setSelectedMail] = useState<Email | null>(null);
 
-  const [mailboxes, setMailboxes] = useState(() => JSON.parse(sessionStorage.getItem('mailboxes') || '{}'));
-
-  useEffect(() => {
-    const handleStorageChange = () => {
-      setMailboxes(JSON.parse(sessionStorage.getItem('mailboxes') || '{}'));
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
-  }, []);
+  const [mailboxes, setMailboxes] = useState({
+    INBOX: "",
+    SENT: "",
+    DRAFTS: "",
+    TRASH: "",
+    SPAM: "",
+  });
 
   const navigate = useNavigate();
   const [searchParams, _setSearchParams] = useSearchParams();
 
+
   useEffect(() => {
+    const handleMailboxesVariables = (event: Event) => {
+      const data = (event as CustomEvent).detail as {
+        INBOX: string;
+        SENT: string;
+        DRAFTS: string;
+        TRASH: string;
+        SPAM: string;
+      };
+      setMailboxes(data)
+    };
+
     const handleLoadMails = (event: Event) => {
       const data = (event as CustomEvent).detail as Email[];
       if (data.length === 0) {
@@ -76,21 +87,43 @@ export default function Index() {
       }
       setEmails((prevEmails) => {
         const newEmails = [...prevEmails, ...data];
-        const uniqueEmails = Array.from(new Set(newEmails.map(email => email.id)))
-          .map(id => newEmails.find(email => email.id === id) as Email);
+        const uniqueEmails = Array.from(new Set(newEmails.map(email => email.mailId)))
+          .map(id => newEmails.find(email => email.mailId === id) as Email);
         return uniqueEmails.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
       });
       setLoading(false);
     };
 
+    const handleMissingConfig = () => {
+      navigate("/settings");
+    }
+
+    window.addEventListener("mailboxes_variables", handleMailboxesVariables);
     window.addEventListener("load_mails", handleLoadMails);
+    window.addEventListener("missing_mail_config", handleMissingConfig);
 
     return () => {
+      window.removeEventListener("mailboxes_variables", handleMailboxesVariables);
       window.removeEventListener("load_mails", handleLoadMails);
+      window.removeEventListener("missing_mail_config", handleMissingConfig);
     };
-  }, []);
+  }, [navigate, getCookie]);
 
   useEffect(() => {
+    console.log("Check to sent user_auth message");
+    if (getCookie("accessToken")) {
+      console.log("Sending user_auth message");
+      let accessToken = getCookie("accessToken");
+      let refreshToken = getCookie("refreshToken");
+      sendMessage({ type: "user_auth", data: { accessToken, refreshToken } });
+    }
+  }, [navigate, sendMessage]);
+
+  useEffect(() => {
+    if (!getCookie("accessToken")) {
+      navigate("/login");
+      return;
+    }
     const stringToId = (str: string) => {
       return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
     }
@@ -99,6 +132,14 @@ export default function Index() {
       return;
     }
   }, [mailboxes, searchParams]);
+
+  useEffect(() => {
+    if (status == "open" && getCookie("accessToken")) {
+      const accessToken = getCookie("accessToken");
+      const refreshToken = getCookie("refreshToken");
+      sendMessage({ type: "user_auth", data: { accessToken, refreshToken } });
+    }
+  }, [status, sendMessage]);
 
   const handleBottomReached = () => {
     if (emails.length === 0 || loading) {
@@ -110,12 +151,17 @@ export default function Index() {
   }
 
   const handleAction = (email: Email, action: "archive" | "delete" | "block" | "mark_as_read" | "mark_as_unread") => {
-    sendMessage({ type: action, data: { id: email.id } });
-    setEmails((prevEmails) => prevEmails.filter((e) => e.id !== email.id));
+    sendMessage({ type: action, data: { id: email.mailId } });
+    if (action === "delete" || action === "archive" || action === "block") {
+      setEmails((prevEmails) => prevEmails.filter((e) => e.mailId !== email.mailId));
+    }
   };
 
   const handleMailClick = (email: Email) => {
     handleAction(email, "mark_as_read");
+    if (!email.flags?.includes("\\Seen")) {
+      email.flags = [...(email.flags || []), "\\Seen"];
+    }
     setSelectedMail(email);
   }
 
@@ -126,7 +172,7 @@ export default function Index() {
   const updateReadStatus = (email: Email, read: boolean) => {
     handleAction(email, read ? "mark_as_read" : "mark_as_unread");
     setEmails((prevEmails) =>
-      prevEmails.map((e) => (e.id === email.id ? { ...e, read } : e))
+      prevEmails.map((e) => (e.mailId === email.mailId ? { ...e, read } : e))
     );
   };
 
