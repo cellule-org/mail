@@ -7,7 +7,6 @@ COPY . .
 WORKDIR /app/frontend
 
 RUN npm install
-
 RUN npm run build && mkdir -p dist
 
 WORKDIR /app
@@ -24,4 +23,4 @@ RUN npm install -g prisma
 
 EXPOSE 3002
 
-CMD npx prisma migrate deploy && npx prisma generate && npx prisma db push --accept-data-loss && npm run dev
+CMD ["sh", "-c", "npx prisma migrate deploy || true && npx prisma generate || true && npx prisma db push --accept-data-loss || true && npm run dev"]
