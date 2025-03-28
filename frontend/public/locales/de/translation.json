@@ -31,6 +31,32 @@
     "login_description": "Melden Sie sich an, um auf Ihr Konto zuzugreifen",
     "redirect_info": "Sie werden zur zentralen Authentifizierungsseite weitergeleitet",
     "login_button": "Anmelden",
+    "notifications": {
+        "email_sync_start": {
+            "title": "E-Mail-Synchronisierung wird gestartet",
+            "message": "Bitte warten Sie, während wir Ihre E-Mails synchronisieren..."
+        },
+        "email_sync_complete": {
+            "title": "E-Mail-Synchronisierung abgeschlossen",
+            "message": "Ihre E-Mails wurden erfolgreich synchronisiert."
+        },
+        "email_send_error": {
+            "title": "Fehler beim Senden der E-Mail",
+            "message": "Beim Senden Ihrer E-Mail ist ein Fehler aufgetreten."
+        },
+        "email_send_error_no_smtp": {
+            "title": "Fehler beim Senden der E-Mail",
+            "message": "Keine SMTP-Konfiguration gefunden"
+        },
+        "email_sending": {
+            "title": "E-Mail wird gesendet",
+            "message": "Bitte warten Sie, während wir Ihre E-Mail senden..."
+        },
+        "email_sent": {
+            "title": "E-Mail gesendet",
+            "message": "E-Mail erfolgreich an {to} gesendet"
+        }
+    },
     "smtp_form": {
         "host": "Host",
         "host_description": "Der Hostname Ihres SMTP-Servers",

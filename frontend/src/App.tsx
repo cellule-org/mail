@@ -6,7 +6,7 @@ import { TooltipProvider } from './components/ui/tooltip';
 import { Toaster } from 'sonner';
 import { toast } from 'sonner';
 import { useTheme } from '@/components/theme-provider';
-
+import { useTranslation } from 'react-i18next';
 
 const currentUrl = `${window.location.protocol}//${window.location.hostname}:${window.location.port}`;
 const wsUrl = currentUrl.replace('http', 'ws').replace('https', 'wss');
@@ -22,26 +22,14 @@ interface GlobalMessage {
     type: string;
     title: string;
     message: string;
+    variables: { [key: string]: string };
 }
 
-interface MessageEvent {
+interface MessageEvent<T = any> {
     type: string;
-    data: any | GlobalMessage;
+    data: T;
 }
 
-const handleGlobalMessage = (data: MessageEvent) => {
-    if (data.type === "message") {
-        data = data as { type: string, data: GlobalMessage };
-        if (data.data.type === 'success') {
-            toast.success(data.data.message, data.data.title);
-        } else if (data.data.type === 'info') {
-            toast.info(data.data.message, data.data.title);
-        } else if (data.data.type === 'error') {
-            toast.error(data.data.message, data.data.title);
-        }
-    }
-    return;
-}
 
 const handleLoadEvents = (data: any) => {
     if (data.type === 'mailboxes_variables') {
@@ -60,6 +48,32 @@ const handleLoadEvents = (data: any) => {
 const App = () => {
     const { theme } = useTheme();
 
+    const { t } = useTranslation();
+
+    const handleGlobalMessage = (data: MessageEvent<GlobalMessage>) => {
+        if (data.type === "message") {
+            let title = t(data.data.title);
+            for (let key in data.data.variables) {
+                title = title.replace(new RegExp(`\\{${key}\\}`, 'g'), data.data.variables[key]);
+            }
+            let message = t(data.data.message);
+            const toastFunc = (() => {
+                switch (data.data.type) {
+                    case 'success':
+                        return toast.success;
+                    case 'error':
+                        return toast.error;
+                    default:
+                        return toast.info; // Default fallback
+                }
+            })();
+
+            toastFunc(title, {
+                description: message
+            });
+        }
+        return;
+    }
     return (
         <WebSocketProvider
             config={websocketConfig}

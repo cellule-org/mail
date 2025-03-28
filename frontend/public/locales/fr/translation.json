@@ -39,6 +39,32 @@
     "imap_configuration_desc": "Configurez votre serveur IMAP pour recevoir des emails.",
     "mailboxes_configuration_title": "Configuration des boîtes",
     "mailboxes_configuration_desc": "Configurez vos boîtes pour organiser vos emails.",
+    "notifications": {
+        "email_sync_start": {
+            "title": "Initialisation de la synchronisation",
+            "message": "Veuillez patienter pendant la synchronisation de vos emails..."
+        },
+        "email_sync_complete": {
+            "title": "Synchronisation terminée",
+            "message": "Vos emails ont été synchronisés avec succès."
+        },
+        "email_send_error": {
+            "title": "Erreur d'envoi",
+            "message": "Une erreur s'est produite lors de l'envoi de votre email."
+        },
+        "email_send_error_no_smtp": {
+            "title": "Erreur d'envoi",
+            "message": "Configuration SMTP introuvable"
+        },
+        "email_sending": {
+            "title": "Envoi en cours",
+            "message": "Veuillez patienter pendant l'envoi de votre email..."
+        },
+        "email_sent": {
+            "title": "Email envoyé",
+            "message": "Email envoyé avec succès à {to}"
+        }
+    },
     "smtp_form": {
         "host": "Hôte",
         "host_description": "Le nom d'hôte de votre serveur SMTP",

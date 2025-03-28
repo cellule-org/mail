@@ -31,6 +31,32 @@
     "login_description": "Faça login para acessar sua conta",
     "redirect_info": "Você será redirecionado para a página central de autenticação",
     "login_button": "Entrar",
+    "notifications": {
+        "email_sync_start": {
+            "title": "Iniciando sincronização de emails",
+            "message": "Aguarde enquanto sincronizamos seus emails..."
+        },
+        "email_sync_complete": {
+            "title": "Sincronização de emails concluída",
+            "message": "Seus emails foram sincronizados com sucesso."
+        },
+        "email_send_error": {
+            "title": "Erro ao enviar email",
+            "message": "Ocorreu um erro ao enviar seu email."
+        },
+        "email_send_error_no_smtp": {
+            "title": "Erro ao enviar email",
+            "message": "Configuração SMTP não encontrada"
+        },
+        "email_sending": {
+            "title": "Enviando email",
+            "message": "Aguarde enquanto enviamos seu email..."
+        },
+        "email_sent": {
+            "title": "Email enviado",
+            "message": "Email enviado com sucesso para {to}"
+        }
+    },
     "smtp_form": {
         "host": "Servidor",
         "host_description": "Nome do servidor SMTP",

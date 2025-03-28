@@ -150,8 +150,8 @@ const handleUserAuth = async (ws: WebSocket, data: { accessToken: string }): Pro
                 type: 'message',
                 data: {
                     type: 'info',
-                    title: 'Initiating email sync',
-                    message: 'Please wait while we sync your emails...'
+                    title: 'notifications.email_sync_start.title',
+                    message: 'notifications.email_sync_start.message'
                 }
             }));
             await handleReceiveEmail(id);
@@ -159,8 +159,8 @@ const handleUserAuth = async (ws: WebSocket, data: { accessToken: string }): Pro
                 type: 'message',
                 data: {
                     type: 'success',
-                    title: 'Email sync complete',
-                    message: 'Your emails have been synced successfully.'
+                    title: 'notifications.email_sync_complete.title',
+                    message: 'notifications.email_sync_complete.message'
                 }
             }));
         }

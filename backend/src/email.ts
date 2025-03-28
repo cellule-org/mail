@@ -286,8 +286,8 @@ export const handleSendEmail = async (ws: WebSocket, data: any, isResponse: bool
             type: 'message',
             data: {
                 type: 'error',
-                title: 'Error sending email',
-                message: 'No SMTP configuration found',
+                title: 'notifications.email_send_error_no_smtp.title',
+                message: 'notifications.email_send_error_no_smtp.message',
             },
         }));
         return;
@@ -299,8 +299,8 @@ export const handleSendEmail = async (ws: WebSocket, data: any, isResponse: bool
             type: 'message',
             data: {
                 type: 'error',
-                title: 'Error sending email',
-                message: 'No SMTP configuration found',
+                title: 'notifications.email_send_error_no_smtp.title',
+                message: 'notifications.email_send_error_no_smtp.message',
             },
         }));
         return;
@@ -310,8 +310,8 @@ export const handleSendEmail = async (ws: WebSocket, data: any, isResponse: bool
         type: 'message',
         data: {
             type: 'info',
-            title: 'Sending email',
-            message: 'Please wait while we send your email...',
+            title: 'notifications.email_sending.title',
+            message: 'notifications.email_sending.message',
         },
     }));
 
@@ -357,7 +357,7 @@ export const handleSendEmail = async (ws: WebSocket, data: any, isResponse: bool
                 type: 'message',
                 data: {
                     type: 'error',
-                    title: 'Error sending email',
+                    title: 'notifications.email_send_error.title',
                     message: err.message,
                 },
             }));
@@ -366,8 +366,9 @@ export const handleSendEmail = async (ws: WebSocket, data: any, isResponse: bool
                 type: 'message',
                 data: {
                     type: 'success',
-                    title: 'Email sent',
-                    message: `Email successfully sent to ${to}`,
+                    title: 'notifications.email_sent.title',
+                    message: 'notifications.email_sent.message',
+                    variables: { to }
                 },
             }));
         }

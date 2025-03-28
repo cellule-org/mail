@@ -39,6 +39,32 @@
     "imap_configuration_desc": "Configure your IMAP server for receiving emails.",
     "mailboxes_configuration_title": "Mailboxes Configuration",
     "mailboxes_configuration_desc": "Configure your mailboxes for organizing emails.",
+    "notifications": {
+        "email_sync_start": {
+            "title": "Initiating email sync",
+            "message": "Please wait while we sync your emails..."
+        },
+        "email_sync_complete": {
+            "title": "Email sync complete",
+            "message": "Your emails have been synced successfully."
+        },
+        "email_send_error": {
+            "title": "Error sending email",
+            "message": "An error occurred while sending your email."
+        },
+        "email_send_error_no_smtp": {
+            "title": "Error sending email",
+            "message": "No SMTP configuration found"
+        },
+        "email_sending": {
+            "title": "Sending email",
+            "message": "Please wait while we send your email..."
+        },
+        "email_sent": {
+            "title": "Email sent",
+            "message": "Email successfully sent to {to}"
+        }
+    },
     "smtp_form": {
         "host": "Host",
         "host_description": "The hostname of your SMTP server",
