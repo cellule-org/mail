@@ -4,7 +4,7 @@ import { ImapFlow, MailboxObject } from 'imapflow';
 import { simpleParser } from 'mailparser';
 import { WebSocket } from 'ws';
 import { PrismaClient } from '@prisma/client';
-import { userConnections, websocketToUserId } from '.';
+import { userConnections } from '.';
 
 const prisma = new PrismaClient();
 
