@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 import EmailForm from "@/components/ui/email";
 import { Email, EmailList } from "@/components/ui/email-list";
-import EmailNav from "@/components/ui/email-nav";
+import EmailNav, { Mailboxes } from "@/components/ui/email-nav";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -55,13 +55,7 @@ export default function Index() {
 
   const [selectedMail, setSelectedMail] = useState<Email | null>(null);
 
-  const [mailboxes, setMailboxes] = useState({
-    INBOX: "",
-    SENT: "",
-    DRAFTS: "",
-    TRASH: "",
-    SPAM: "",
-  });
+  const [mailboxes, setMailboxes] = useState<Mailboxes | null>(null);
 
   const navigate = useNavigate();
   const [searchParams, _setSearchParams] = useSearchParams();
@@ -110,12 +104,14 @@ export default function Index() {
   }, [navigate, getCookie]);
 
   useEffect(() => {
-    if (getCookie("accessToken")) {
+    if (getCookie("accessToken") && status === "open") {
       let accessToken = getCookie("accessToken");
       let refreshToken = getCookie("refreshToken");
-      sendMessage({ type: "user_auth", data: { accessToken, refreshToken } });
+      setTimeout(() => {
+        sendMessage({ type: "user_auth", data: { accessToken, refreshToken } });
+      }, 500); // Wait 500ms to ensure the server is ready
     }
-  }, [navigate, sendMessage]);
+  }, [navigate, sendMessage, status]);
 
   useEffect(() => {
     if (!getCookie("accessToken")) {
@@ -125,19 +121,11 @@ export default function Index() {
     const stringToId = (str: string) => {
       return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
     }
-    if (!searchParams.has("mailbox") && mailboxes.INBOX) {
+    if (!searchParams.has("mailbox") && mailboxes && mailboxes.INBOX) {
       navigate(`/?mailbox=${stringToId(mailboxes.INBOX)}`);
       return;
     }
   }, [mailboxes, searchParams]);
-
-  useEffect(() => {
-    if (status == "open" && getCookie("accessToken")) {
-      const accessToken = getCookie("accessToken");
-      const refreshToken = getCookie("refreshToken");
-      sendMessage({ type: "user_auth", data: { accessToken, refreshToken } });
-    }
-  }, [status, sendMessage]);
 
   const handleBottomReached = () => {
     if (emails.length === 0 || loading) {
@@ -218,7 +206,7 @@ export default function Index() {
     <section className="flex flex-col items-center justify-between h-screen max-h-screen min-h-screen">
       <ResizablePanelGroup className="flex flex-row w-full h-full max-h-screen gap-1 bg-card rounded-xl shadow-lg" direction="horizontal">
         <ResizablePanel defaultSize={12} minSize={12} maxSize={20} className="min-w-fit">
-          <EmailNav tags={[]} className="p-4 min-w-fit" onNewMessage={handleNewMail} />
+          <EmailNav mailboxes={mailboxes} tags={[]} className="p-4 min-w-fit" onNewMessage={handleNewMail} />
         </ResizablePanel>
         <ResizableHandle withHandle />
         <ResizablePanel defaultSize={46.25} minSize={25} maxSize={68} className="!overflow-y-auto scrollbar-thin scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-thumb-neutral-300 scrollbar-track-transparent dark:scrollbar-thumb-neutral-900">

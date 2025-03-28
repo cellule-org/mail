@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { Separator } from "./separator";
 import { Button } from "./button";
 import { File, Inbox, MailPlus, MailWarning, Send, Trash2 } from "lucide-react";
-import { cloneElement, ReactElement, useEffect, useState } from "react";
+import { cloneElement, ReactElement } from "react";
 import { useTranslation } from "react-i18next";
 
 interface Tag {
@@ -12,7 +12,16 @@ interface Tag {
     label: string;
 }
 
+export interface Mailboxes {
+    INBOX: string;
+    SENT: string;
+    DRAFTS: string;
+    TRASH: string;
+    SPAM: string;
+}
+
 interface EmailNavProps {
+    mailboxes: Mailboxes | null;
     tags: Tag[];
     onNewMessage: () => void;
 }
@@ -36,22 +45,8 @@ const MailboxLink = ({ mailbox, icon, label }: { mailbox: string, icon: ReactEle
     );
 }
 
-const EmailNav = ({ tags, onNewMessage, className, ...props }: EmailNavProps & React.ComponentProps<"nav">) => {
-    const [mailboxes, setMailboxes] = useState(() => JSON.parse(sessionStorage.getItem('mailboxes') || '{}'));
-
+const EmailNav = ({ tags, mailboxes, onNewMessage, className, ...props }: EmailNavProps & React.ComponentProps<"nav">) => {
     const { t } = useTranslation();
-
-    useEffect(() => {
-        const handleStorageChange = () => {
-            setMailboxes(JSON.parse(sessionStorage.getItem('mailboxes') || '{}'));
-        };
-
-        window.addEventListener('storage', handleStorageChange);
-
-        return () => {
-            window.removeEventListener('storage', handleStorageChange);
-        };
-    }, []);
 
     return (
         <nav className={cn("flex flex-col justify-between h-full bg-card shadow-lg", className)} {...props}>
@@ -62,26 +57,28 @@ const EmailNav = ({ tags, onNewMessage, className, ...props }: EmailNavProps & R
                     {t('new_message')}
                 </Button>
 
-                <section className="flex flex-col justify-start gap-4">
-                    <h2 className="text-lg font-semibold">{t('categories')}</h2>
-                    <ul className="flex flex-col gap-2">
-                        {mailboxes.INBOX && (
-                            <MailboxLink mailbox={mailboxes.INBOX} icon={<Inbox size={16} />} label={t('inbox')} />
-                        )}
-                        {mailboxes.DRAFTS && (
-                            <MailboxLink mailbox={mailboxes.DRAFTS} icon={<File size={16} />} label={t('drafts')} />
-                        )}
-                        {mailboxes.SENT && (
-                            <MailboxLink mailbox={mailboxes.SENT} icon={<Send size={16} />} label={t('sent')} />
-                        )}
-                        {mailboxes.SPAM && (
-                            <MailboxLink mailbox={mailboxes.SPAM} icon={<MailWarning size={16} />} label={t('spam')} />
-                        )}
-                        {mailboxes.TRASH && (
-                            <MailboxLink mailbox={mailboxes.TRASH} icon={<Trash2 size={16} />} label={t('trash')} />
-                        )}
-                    </ul>
-                </section>
+                {mailboxes && (
+                    <section className="flex flex-col justify-start gap-4">
+                        <h2 className="text-lg font-semibold">{t('categories')}</h2>
+                        <ul className="flex flex-col gap-2">
+                            {mailboxes.INBOX && (
+                                <MailboxLink mailbox={mailboxes.INBOX} icon={<Inbox size={16} />} label={t('inbox')} />
+                            )}
+                            {mailboxes.DRAFTS && (
+                                <MailboxLink mailbox={mailboxes.DRAFTS} icon={<File size={16} />} label={t('drafts')} />
+                            )}
+                            {mailboxes.SENT && (
+                                <MailboxLink mailbox={mailboxes.SENT} icon={<Send size={16} />} label={t('sent')} />
+                            )}
+                            {mailboxes.SPAM && (
+                                <MailboxLink mailbox={mailboxes.SPAM} icon={<MailWarning size={16} />} label={t('spam')} />
+                            )}
+                            {mailboxes.TRASH && (
+                                <MailboxLink mailbox={mailboxes.TRASH} icon={<Trash2 size={16} />} label={t('trash')} />
+                            )}
+                        </ul>
+                    </section>
+                )}
 
                 {tags.length > 0 && (
                     <>
