@@ -27,7 +27,6 @@ interface UserConnections {
 
 
 export const userConnections = new Map<string, UserConnections>();
-export const websocketToUserId = new Map<WebSocket, string>();
 
 let core_ws: WebSocket | null = null;
 export let mail_ws: WebSocketServer | null = null;
@@ -118,7 +117,7 @@ const handleMessage = async (ws: WebSocket, message: RawData): Promise<void> => 
             loadMails(ws, data.pagination);
             break;
         case 'delete':
-            deleteMail(ws, data.id);
+            deleteMail(ws, data.id, data.userId);
             break;
         case 'mark_as_read':
             modifyFlag(ws, data.id, data.userId, '\\Seen', addFlag);
@@ -139,8 +138,8 @@ const parseMessage = (message: RawData): { type: string, data: any, auth: { acce
     }
 };
 
-const handleUserAuth = async (ws: WebSocket, { accessToken }: { accessToken: string }): Promise<void> => {
-    const jwtObject = jwt.decode(accessToken) as { id: string } | null;
+const handleUserAuth = async (ws: WebSocket, data: { accessToken: string }): Promise<void> => {
+    const jwtObject = jwt.decode(data.accessToken) as { id: string } | null;
     if (!jwtObject) return;
 
     const { id } = jwtObject;
@@ -149,7 +148,6 @@ const handleUserAuth = async (ws: WebSocket, { accessToken }: { accessToken: str
     if (!userConfig?.imap || !userConfig?.smtp) {
         sendData(ws, 'missing_mail_config', { imap: !userConfig?.imap, smtp: !userConfig?.smtp });
     } else {
-        sendInitialData(ws, id);
         if (userConnections.has(id)) {
             return;
         }
@@ -171,6 +169,7 @@ const handleUserAuth = async (ws: WebSocket, { accessToken }: { accessToken: str
                 message: 'Your emails have been synced successfully.'
             }
         }));
+        sendInitialData(ws, id);
     }
 };
 
@@ -179,8 +178,7 @@ const loadMails = async (ws: WebSocket, pagination = 0): Promise<void> => {
     sendData(ws, 'load_mails', mails);
 };
 
-const deleteMail = async (ws: WebSocket, id: string): Promise<void> => {
-    let user_id = websocketToUserId.get(ws);
+const deleteMail = async (ws: WebSocket, id: string, user_id: string): Promise<void> => {
     if (!user_id) {
         return;
     }
