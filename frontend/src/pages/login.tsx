@@ -42,7 +42,6 @@ export default function LoginPage() {
             setCookie("accessToken", accessToken, accessExpiry);
             setCookie("refreshToken", refreshToken, refreshExpiry);
             setCookie("userId", userId, refreshExpiry);
-            sendMessage({ type: "user_auth", data: { accessToken, refreshToken } });
             navigate("/");
             return;
         }
