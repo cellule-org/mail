@@ -87,8 +87,6 @@ const initializeWebSocket = async (): Promise<void> => {
 
 const handleConnection = async (ws: WebSocket): Promise<void> => {
     console.log('(MailWS) - New WebSocket connection');
-    const mails = await prisma.mail.findMany({ take: 20, orderBy: { date: 'desc' } });
-    sendData(ws, 'load_mails', mails);
     ws.on('message', (message: RawData) => handleMessage(ws, message));
 };
 
@@ -114,7 +112,7 @@ const handleMessage = async (ws: WebSocket, message: RawData): Promise<void> => 
             safeExecute(() => handleSendEmail(ws, data, true), 'replying to email');
             break;
         case 'load_mails':
-            loadMails(ws, data.pagination);
+            loadMails(ws, data.userId, data.pagination);
             break;
         case 'delete':
             deleteMail(ws, data.id, data.userId);
@@ -139,42 +137,45 @@ const parseMessage = (message: RawData): { type: string, data: any, auth: { acce
 };
 
 const handleUserAuth = async (ws: WebSocket, data: { accessToken: string }): Promise<void> => {
-    const jwtObject = jwt.decode(data.accessToken) as { id: string } | null;
-    if (!jwtObject) return;
-
+    const jwtObject = jwt.decode(data.accessToken) as { id: string };
     const { id } = jwtObject;
     const userConfig = await prisma.user.findUnique({ where: { id }, include: { imap: true, smtp: true } });
 
     if (!userConfig?.imap || !userConfig?.smtp) {
         sendData(ws, 'missing_mail_config', { imap: !userConfig?.imap, smtp: !userConfig?.smtp });
     } else {
-        if (userConnections.has(id)) {
-            return;
+        if (!userConnections.has(id)) {
+            userConnections.set(id, { transporter: createTransporter(userConfig.smtp), imap_flow: createImapFlow(userConfig.imap) });
+            ws.send(JSON.stringify({
+                type: 'message',
+                data: {
+                    type: 'info',
+                    title: 'Initiating email sync',
+                    message: 'Please wait while we sync your emails...'
+                }
+            }));
+            await handleReceiveEmail(id);
+            ws.send(JSON.stringify({
+                type: 'message',
+                data: {
+                    type: 'success',
+                    title: 'Email sync complete',
+                    message: 'Your emails have been synced successfully.'
+                }
+            }));
         }
-        userConnections.set(id, { transporter: createTransporter(userConfig.smtp), imap_flow: createImapFlow(userConfig.imap) });
-        ws.send(JSON.stringify({
-            type: 'message',
-            data: {
-                type: 'info',
-                title: 'Initiating email sync',
-                message: 'Please wait while we sync your emails...'
-            }
-        }));
-        await handleReceiveEmail(id);
-        ws.send(JSON.stringify({
-            type: 'message',
-            data: {
-                type: 'success',
-                title: 'Email sync complete',
-                message: 'Your emails have been synced successfully.'
-            }
-        }));
         sendInitialData(ws, id);
+        const mails = await prisma.mail.findMany({
+            where: { userId: id },
+            take: 20,
+            orderBy: { date: 'desc' }
+        });
+        sendData(ws, 'load_mails', mails);
     }
 };
 
-const loadMails = async (ws: WebSocket, pagination = 0): Promise<void> => {
-    const mails = await prisma.mail.findMany({ take: 20, skip: 20 * pagination, orderBy: { date: 'desc' } });
+const loadMails = async (ws: WebSocket, userId: string, pagination = 0): Promise<void> => {
+    const mails = await prisma.mail.findMany({ where: { userId }, take: 20, skip: 20 * pagination, orderBy: { date: 'desc' } });
     sendData(ws, 'load_mails', mails);
 };
 
