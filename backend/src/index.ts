@@ -112,7 +112,7 @@ const handleMessage = async (ws: WebSocket, message: RawData): Promise<void> => 
             safeExecute(() => handleSendEmail(ws, data, true), 'replying to email');
             break;
         case 'load_mails':
-            loadMails(ws, data.userId, data.pagination);
+            loadMails(ws, data.userId, data.pagination, data.mailbox);
             break;
         case 'delete':
             deleteMail(ws, data.id, data.userId);
@@ -174,8 +174,19 @@ const handleUserAuth = async (ws: WebSocket, data: { accessToken: string }): Pro
     }
 };
 
-const loadMails = async (ws: WebSocket, userId: string, pagination = 0): Promise<void> => {
-    const mails = await prisma.mail.findMany({ where: { userId }, take: 20, skip: 20 * pagination, orderBy: { date: 'desc' } });
+const loadMails = async (ws: WebSocket, userId: string, pagination = 0, mailbox?: string): Promise<void> => {
+    const query: any = { userId };
+    if (mailbox) {
+        query.mailboxId = mailbox;
+    }
+
+    const mails = await prisma.mail.findMany({
+        where: query,
+        take: 20,
+        skip: 20 * pagination,
+        orderBy: { date: 'desc' }
+    });
+
     sendData(ws, 'load_mails', mails);
 };
 
