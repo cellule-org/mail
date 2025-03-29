@@ -29,6 +29,7 @@ export interface UseMinimalTiptapEditorProps extends UseEditorOptions {
   placeholder?: string
   editorClassName?: string
   throttleDelay?: number
+  immediateInput: boolean
   onUpdate?: (content: Content) => void
   onBlur?: (content: Content) => void
 }
@@ -166,6 +167,7 @@ export const useMinimalTiptapEditor = ({
   placeholder = '',
   editorClassName,
   throttleDelay = 0,
+  immediateInput = false,
   onUpdate,
   onBlur,
   ...props

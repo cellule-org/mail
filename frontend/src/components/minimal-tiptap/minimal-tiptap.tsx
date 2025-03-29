@@ -21,6 +21,7 @@ export interface MinimalTiptapProps extends Omit<UseMinimalTiptapEditorProps, 'o
   onChange?: (value: Content) => void
   className?: string
   editorContentClassName?: string
+  immediateInput: boolean // Ajout de la propriété pour traiter immédiatement les entrées
 }
 
 const Toolbar = ({ editor }: { editor: Editor }) => (
@@ -51,10 +52,11 @@ const Toolbar = ({ editor }: { editor: Editor }) => (
   </div>
 )
 export const MinimalTiptapEditor = React.forwardRef<HTMLDivElement, MinimalTiptapProps>(
-  ({ value, onChange, className, editorContentClassName, ...props }, ref) => {
+  ({ value, onChange, className, editorContentClassName, immediateInput = false, ...props }, ref) => {
     let editor = useMinimalTiptapEditor({
       value,
       onUpdate: onChange,
+      immediateInput,
       ...props
     })
 
