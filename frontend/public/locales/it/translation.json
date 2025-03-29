@@ -40,6 +40,7 @@
     "mailboxes_configuration_title": "Configurazione caselle",
     "mailboxes_configuration_desc": "Configura le tue caselle per organizzare le email.",
     "settings": "Impostazioni",
+    "close": "Chiudi",
     "notifications": {
         "email_sync_start": {
             "title": "Inizializzazione sincronizzazione email",

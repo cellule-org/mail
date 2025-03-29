@@ -40,6 +40,7 @@
     "mailboxes_configuration_title": "Postfächer-Konfiguration",
     "mailboxes_configuration_desc": "Konfigurieren Sie Ihre Postfächer zur Organisation von E-Mails.",
     "settings": "Einstellungen",
+    "close": "Schließen",
     "notifications": {
         "email_sync_start": {
             "title": "E-Mail-Synchronisierung wird gestartet",

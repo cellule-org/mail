@@ -40,6 +40,7 @@
     "mailboxes_configuration_title": "Mailboxes Configuration",
     "mailboxes_configuration_desc": "Configure your mailboxes for organizing emails.",
     "settings": "Settings",
+    "close": "Close",
     "notifications": {
         "email_sync_start": {
             "title": "Initiating email sync",

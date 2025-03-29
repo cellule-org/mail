@@ -40,6 +40,7 @@
     "mailboxes_configuration_title": "Configuración de buzones",
     "mailboxes_configuration_desc": "Configure sus buzones para organizar correos.",
     "settings": "Configuración",
+    "close": "Cerrar",
     "notifications": {
         "email_sync_start": {
             "title": "Iniciando sincronización de correo",

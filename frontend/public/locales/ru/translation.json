@@ -40,6 +40,7 @@
     "mailboxes_configuration_title": "Настройка почтовых ящиков",
     "mailboxes_configuration_desc": "Настройте почтовые ящики для организации писем.",
     "settings": "Настройки",
+    "close": "Закрыть",
     "notifications": {
         "email_sync_start": {
             "title": "Начало синхронизации писем",
