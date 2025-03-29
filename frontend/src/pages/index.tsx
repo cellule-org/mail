@@ -15,6 +15,7 @@ import { useNavigate, useSearchParams } from "react-router";
 
 import { useTranslation } from "react-i18next";
 import * as locales from 'date-fns/locale';
+import EmailViewer from "@/components/ui/email-viewer";
 
 type LocaleKey = keyof typeof locales;
 
@@ -54,6 +55,7 @@ export default function Index() {
   const [loading, setLoading] = useState(false);
 
   const [selectedMail, setSelectedMail] = useState<Email | null>(null);
+  const [reply, setReply] = useState(false);
 
   const [mailboxes, setMailboxes] = useState<Mailboxes | null>(null);
 
@@ -153,6 +155,7 @@ export default function Index() {
 
   const handleNewMail = () => {
     setSelectedMail(null);
+    setReply(true);
   }
 
   const updateReadStatus = (email: Email, read: boolean) => {
@@ -177,10 +180,12 @@ export default function Index() {
 
   const handleDelete = (email: Email) => {
     handleAction(email, "delete");
+    setSelectedMail(null);
   };
 
   const handleReply = (email: Email) => {
-    setSelectedMail({ ...email, subject: email.subject });
+    setSelectedMail({ ...email, subject: `Re: ${email.subject}` });
+    setReply(true);
   };
 
   const handleReplyAll = (email: Email) => {
@@ -188,10 +193,12 @@ export default function Index() {
       new Set([...(email.to || []), ...(email.cc || [])])
     ).filter((r) => r !== email.from);
     setSelectedMail({ ...email, subject: email.subject, to: recipients });
+    setReply(true);
   };
 
   const handleForward = (email: Email) => {
     setSelectedMail({ ...email, subject: `Fwd: ${email.subject}` });
+    setReply(true);
   };
 
   const handleCopyEmailAddress = (email: Email) => {
@@ -209,7 +216,7 @@ export default function Index() {
           <EmailNav mailboxes={mailboxes} tags={[]} className="p-4 min-w-fit" onNewMessage={handleNewMail} />
         </ResizablePanel>
         <ResizableHandle withHandle />
-        <ResizablePanel defaultSize={46.25} minSize={25} maxSize={68} className="!overflow-y-auto scrollbar-thin scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-thumb-neutral-300 scrollbar-track-transparent dark:scrollbar-thumb-neutral-900">
+        <ResizablePanel defaultSize={46.25} minSize={25} maxSize={80} className="!overflow-y-auto scrollbar">
           <EmailList
             locale={getLocaleFromI18n(language)}
             className="w-full pt-4 px-4"
@@ -227,11 +234,20 @@ export default function Index() {
             onBlock={handleBlock}
           />
         </ResizablePanel>
-        <ResizableHandle withHandle />
-        <ResizablePanel defaultSize={46.25} minSize={25} maxSize={68} className="!overflow-y-auto">
-          <EmailForm className="w-full p-4" email={selectedMail} />
-        </ResizablePanel >
+        {selectedMail && (
+          <>
+            <ResizableHandle withHandle />
+            <ResizablePanel defaultSize={46.25} minSize={25} maxSize={68} className="!overflow-y-auto">
+              <EmailViewer email={selectedMail} locale={getLocaleFromI18n(language)} onReply={handleReply} onForward={handleForward} onDelete={handleDelete} onMarkRead={handleMarkAsRead} onMarkUnread={handleMarkAsUnread} onClose={() => setSelectedMail(null)} />
+            </ResizablePanel >
+          </>
+        )}
       </ResizablePanelGroup >
+      {reply && selectedMail && (
+        <EmailForm email={selectedMail} onClose={() => {
+          setReply(false)
+        }} />
+      )}
     </section >
   )
 }

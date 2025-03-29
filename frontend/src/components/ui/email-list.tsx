@@ -16,23 +16,23 @@ import { ContextMenu, ContextMenuContent, ContextMenuGroup, ContextMenuItem, Con
 import { useTheme } from "../theme-provider"
 
 export interface Email {
-    mailId: string
-    from: string
-    to: string[]
-    subject: string
-    text: string
-    cc?: string[]
-    bcc?: string[]
-    attachments?: {
-        name: string
-        size: number
-        type: string
-    }[]
-    date: string
-    flags: string[]
-    labels: string[]
-    mailboxId: string
-    threadId: string
+    id?: string;
+    mailId: string;
+    userId?: string;
+    labels?: string[];
+    flags: string[];
+    threadId?: string;
+    mailboxId: string;
+    from: string;
+    to: string[] | string;
+    cc?: string[];
+    bcc?: string[];
+    subject: string;
+    content: string;
+    text: string;
+    date: string | Date;
+    read: boolean;
+    attachments?: Array<{ name: string; url: string }>;
 }
 
 interface EmailListProps {
@@ -169,7 +169,7 @@ export function EmailList({
             />
             {filteredEmails.length > 0 ? (
                 filteredEmails.map((email) => (
-                    <ContextMenu key={email.mailId}>
+                    <ContextMenu key={email.id}>
                         <ContextMenuTrigger>
                             <Card className="transition-all py-0 shadow-none cursor-pointer" onClick={() => onMailClick(email)}>
                                 <CardContent className="p-4">
@@ -186,7 +186,7 @@ export function EmailList({
                                                 </section>
                                             </section>
 
-                                            <section className={cn("overflow-hidden text-ellipsis whitespace-nowrap", !email.flags.includes("\\Seen") ? "font-semibold" : "font-normal")}>
+                                            <section className={cn("overflow-hidden text-ellipsis whitespace-nowrap", !email.read ? "font-semibold" : "font-normal")}>
                                                 {email.subject}
                                             </section>
 
