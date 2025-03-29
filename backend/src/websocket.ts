@@ -82,12 +82,12 @@ export const connectToWebSocketServer = async (url: string = config.coreWsUrl, r
             });
 
             ws.on('error', (err) => {
-                logger.warn(`Connection attempt failed: ${err.message}`);
+                //logger.warn(`Connection attempt failed: ${err.message}`);
                 setTimeout(() => attempt(retryCount - 1), delay);
             });
 
             ws.on('close', (code, reason) => {
-                logger.warn(`Connection closed during connection attempt: ${code} - ${reason}`);
+                //logger.warn(`Connection closed during connection attempt: ${code} - ${reason}`);
                 setTimeout(() => attempt(retryCount - 1), delay);
             });
         };
