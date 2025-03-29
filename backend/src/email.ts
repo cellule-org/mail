@@ -5,8 +5,10 @@ import { simpleParser } from 'mailparser';
 import { WebSocket } from 'ws';
 import { PrismaClient } from '@prisma/client';
 import { userConnections } from '.';
+import { createLogger } from './utils/logger';
 
 const prisma = new PrismaClient();
+const logger = createLogger('email');
 
 export const createTransporter = (smtpConfig: {
     id: string;
@@ -112,10 +114,12 @@ const handleMail = async (user_id: string, message: any, path: string) => {
                     Mailbox: {
                         connectOrCreate: {
                             where: {
-                                id: stringToId(path)
+                                mailboxId: stringToId(path),
+                                userId: user_id
                             },
                             create: {
-                                id: stringToId(path),
+                                mailboxId: stringToId(path),
+                                userId: user_id,
                                 name: path
                             }
                         }
@@ -182,22 +186,22 @@ export const handleReceiveEmail = async (user_id: string) => {
     }
     await client.connect();
     const mailboxes = await client.list();
-    console.log('Mailboxes:', mailboxes.map(mailbox => mailbox.path));
+    logger.info(`Mailboxes: ${mailboxes.map(mailbox => mailbox.path).join(', ')}`);
     let supported_mailboxes = [user.mailboxes.sent, user.mailboxes.drafts, user.mailboxes.trash, user.mailboxes.spam]; // Only process these mailboxes
 
     for (let folder of await client.list()) {
         if (folder.path === 'INBOX' || folder.path === user.mailboxes.inbox || !supported_mailboxes.includes(folder.path)) {
             continue;
         }
-        console.log('Processing mailbox:', folder.path);
+        logger.info(`Processing mailbox: ${folder.path}`);
         await handleMailbox(user_id, folder.path);
     }
     if (user.mailboxes.inbox) {
-        console.log('Processing mailbox:', user.mailboxes.inbox);
+        logger.info(`Processing mailbox: ${user.mailboxes.inbox}`);
         await handleMailbox(user_id, user.mailboxes.inbox);
     }
     client.on('exists', async (mailbox: MailboxObject) => {
-        console.log('New mail in mailbox:', mailbox.path);
+        logger.info(`New email in mailbox: ${mailbox.path}`);
         let lock = await client.getMailboxLock(mailbox.path);
         try {
             for await (let message of client.fetch('1:*', { source: true, envelope: true, flags: true })) {
@@ -274,7 +278,7 @@ export const removeFlag = async (ws: WebSocket, data: { uid: string, user_id: st
 }
 
 export const handleSendEmail = async (ws: WebSocket, data: any, isResponse: boolean) => {
-    console.log('Sending email:', data);
+    logger.info('Sending email:', data);
     let user_id = data.userId;
     if (!user_id) {
         return;

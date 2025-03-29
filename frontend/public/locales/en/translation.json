@@ -39,6 +39,7 @@
     "imap_configuration_desc": "Configure your IMAP server for receiving emails.",
     "mailboxes_configuration_title": "Mailboxes Configuration",
     "mailboxes_configuration_desc": "Configure your mailboxes for organizing emails.",
+    "settings": "Settings",
     "notifications": {
         "email_sync_start": {
             "title": "Initiating email sync",
@@ -63,6 +64,27 @@
         "email_sent": {
             "title": "Email sent",
             "message": "Email successfully sent to {to}"
+        },
+        "smtp_save_success": {
+            "title": "SMTP Configuration Saved",
+            "message": "Your SMTP server configuration has been saved successfully."
+        },
+        "smtp_save_error": {
+            "title": "Failed to Save SMTP Configuration"
+        },
+        "imap_save_success": {
+            "title": "IMAP Configuration Saved",
+            "message": "Your IMAP server configuration has been saved successfully."
+        },
+        "imap_save_error": {
+            "title": "Failed to Save IMAP Configuration"
+        },
+        "mailboxes_save_success": {
+            "title": "Mailboxes Configuration Saved",
+            "message": "Your mailboxes configuration has been saved successfully."
+        },
+        "mailboxes_save_error": {
+            "title": "Failed to Save Mailboxes Configuration"
         }
     },
     "smtp_form": {

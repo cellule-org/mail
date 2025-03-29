@@ -31,6 +31,15 @@
     "login_description": "Faça login para acessar sua conta",
     "redirect_info": "Você será redirecionado para a página central de autenticação",
     "login_button": "Entrar",
+    "back_to_home": "Voltar para o início",
+    "user_email_settings": "Configurações do servidor de email",
+    "smtp_configuration_title": "Configuração do servidor SMTP",
+    "smtp_configuration_desc": "Configure seu servidor SMTP para enviar emails.",
+    "imap_configuration_title": "Configuração do servidor IMAP",
+    "imap_configuration_desc": "Configure seu servidor IMAP para receber emails.",
+    "mailboxes_configuration_title": "Configuração das caixas",
+    "mailboxes_configuration_desc": "Configure suas caixas para organizar emails.",
+    "settings": "Configurações",
     "notifications": {
         "email_sync_start": {
             "title": "Iniciando sincronização de emails",
@@ -55,6 +64,27 @@
         "email_sent": {
             "title": "Email enviado",
             "message": "Email enviado com sucesso para {to}"
+        },
+        "smtp_save_success": {
+            "title": "Configuração SMTP salva",
+            "message": "A configuração do seu servidor SMTP foi salva com sucesso."
+        },
+        "smtp_save_error": {
+            "title": "Falha ao salvar configuração SMTP"
+        },
+        "imap_save_success": {
+            "title": "Configuração IMAP salva",
+            "message": "A configuração do seu servidor IMAP foi salva com sucesso."
+        },
+        "imap_save_error": {
+            "title": "Falha ao salvar configuração IMAP"
+        },
+        "mailboxes_save_success": {
+            "title": "Configuração das caixas salva",
+            "message": "A configuração das suas caixas foi salva com sucesso."
+        },
+        "mailboxes_save_error": {
+            "title": "Falha ao salvar configuração das caixas"
         }
     },
     "smtp_form": {

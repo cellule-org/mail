@@ -55,11 +55,11 @@ export function SmtpForm({ defaultValues }: SmtpFormProps) {
         setIsLoading(true)
         try {
             await saveSmtpConfig(data)
-            toast.success("SMTP Configuration Saved", {
-                description: "Your SMTP server configuration has been saved successfully.",
+            toast.success(t("notifications.smtp_save_success.title"), {
+                description: t("notifications.smtp_save_success.message"),
             })
         } catch (error: any) {
-            toast.error("Failed to Save SMTP Configuration", {
+            toast.error(t("notifications.smtp_save_error.title"), {
                 description: error.message,
             })
         } finally {

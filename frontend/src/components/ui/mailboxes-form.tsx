@@ -54,11 +54,11 @@ export function MailboxesForm({ defaultValues }: MailboxesFormProps) {
         setIsLoading(true)
         try {
             await saveMailboxesConfig(data)
-            toast.success("IMAP Configuration Saved", {
-                description: "Your IMAP server configuration has been saved successfully.",
+            toast.success(t("notifications.mailboxes_save_success.title"), {
+                description: t("notifications.mailboxes_save_success.message"),
             })
         } catch (error: any) {
-            toast.error("Failed to Save IMAP Configuration", {
+            toast.error(t("notifications.mailboxes_save_error.title"), {
                 description: error.message,
             })
         } finally {

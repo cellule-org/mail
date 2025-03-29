@@ -39,6 +39,7 @@
     "imap_configuration_desc": "Configurez votre serveur IMAP pour recevoir des emails.",
     "mailboxes_configuration_title": "Configuration des boîtes",
     "mailboxes_configuration_desc": "Configurez vos boîtes pour organiser vos emails.",
+    "settings": "Paramètres",
     "notifications": {
         "email_sync_start": {
             "title": "Initialisation de la synchronisation",
@@ -63,6 +64,27 @@
         "email_sent": {
             "title": "Email envoyé",
             "message": "Email envoyé avec succès à {to}"
+        },
+        "smtp_save_success": {
+            "title": "Configuration SMTP enregistrée",
+            "message": "Votre configuration de serveur SMTP a été enregistrée avec succès."
+        },
+        "smtp_save_error": {
+            "title": "Échec de l'enregistrement de la configuration SMTP"
+        },
+        "imap_save_success": {
+            "title": "Configuration IMAP enregistrée",
+            "message": "Votre configuration de serveur IMAP a été enregistrée avec succès."
+        },
+        "imap_save_error": {
+            "title": "Échec de l'enregistrement de la configuration IMAP"
+        },
+        "mailboxes_save_success": {
+            "title": "Configuration des boîtes enregistrée",
+            "message": "Votre configuration des boîtes a été enregistrée avec succès."
+        },
+        "mailboxes_save_error": {
+            "title": "Échec de l'enregistrement de la configuration des boîtes"
         }
     },
     "smtp_form": {

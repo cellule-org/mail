@@ -20,6 +20,7 @@ model User {
   imap      IMAP?
   mailboxes Mailboxes?
   mails     Mail[]
+  Mailbox   Mailbox[]
 }
 
 model SMTP {
@@ -53,9 +54,11 @@ model Mailboxes {
 }
 
 model Mailbox {
-  id   String @id
-  name String
-  Mail Mail[]
+  mailboxId String @id @default(cuid())
+  userId    String
+  name      String
+  Mail      Mail[]
+  User      User   @relation(fields: [userId], references: [id])
 }
 
 model Thread {
@@ -79,7 +82,7 @@ model Mail {
   date      DateTime @default(now())
 
   Thread  Thread  @relation(fields: [threadId], references: [id])
-  Mailbox Mailbox @relation(fields: [mailboxId], references: [id])
+  Mailbox Mailbox @relation(fields: [mailboxId], references: [mailboxId])
   User    User    @relation(fields: [userId], references: [id])
 
   @@id(name: "id", [mailId, userId])

@@ -31,6 +31,15 @@
     "login_description": "Melden Sie sich an, um auf Ihr Konto zuzugreifen",
     "redirect_info": "Sie werden zur zentralen Authentifizierungsseite weitergeleitet",
     "login_button": "Anmelden",
+    "back_to_home": "Zurück zur Startseite",
+    "user_email_settings": "E-Mail-Server-Einstellungen",
+    "smtp_configuration_title": "SMTP-Server-Konfiguration",
+    "smtp_configuration_desc": "Konfigurieren Sie Ihren SMTP-Server zum Senden von E-Mails.",
+    "imap_configuration_title": "IMAP-Server-Konfiguration",
+    "imap_configuration_desc": "Konfigurieren Sie Ihren IMAP-Server zum Empfangen von E-Mails.",
+    "mailboxes_configuration_title": "Postfächer-Konfiguration",
+    "mailboxes_configuration_desc": "Konfigurieren Sie Ihre Postfächer zur Organisation von E-Mails.",
+    "settings": "Einstellungen",
     "notifications": {
         "email_sync_start": {
             "title": "E-Mail-Synchronisierung wird gestartet",
@@ -55,6 +64,27 @@
         "email_sent": {
             "title": "E-Mail gesendet",
             "message": "E-Mail erfolgreich an {to} gesendet"
+        },
+        "smtp_save_success": {
+            "title": "SMTP-Konfiguration gespeichert",
+            "message": "Ihre SMTP-Serverkonfiguration wurde erfolgreich gespeichert."
+        },
+        "smtp_save_error": {
+            "title": "Fehler beim Speichern der SMTP-Konfiguration"
+        },
+        "imap_save_success": {
+            "title": "IMAP-Konfiguration gespeichert",
+            "message": "Ihre IMAP-Serverkonfiguration wurde erfolgreich gespeichert."
+        },
+        "imap_save_error": {
+            "title": "Fehler beim Speichern der IMAP-Konfiguration"
+        },
+        "mailboxes_save_success": {
+            "title": "Mailboxes-Konfiguration gespeichert",
+            "message": "Ihre Mailboxes-Konfiguration wurde erfolgreich gespeichert."
+        },
+        "mailboxes_save_error": {
+            "title": "Fehler beim Speichern der Mailboxes-Konfiguration"
         }
     },
     "smtp_form": {

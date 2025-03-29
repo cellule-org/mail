@@ -37,8 +37,8 @@ export default function SettingsPage() {
     }, [])
 
     return (
-        <div className="h-screen w-screen flex items-center justify-center">
-            <div className="w-full max-w-5xl p-4">
+        <div className="h-fit w-full flex justify-center px-56">
+            <div className="h-fit w-full max-w-5xl p-4">
                 <Link to="/">
                     <a className="text-blue-500 hover:underline">{t("back_to_home")}</a>
                 </Link>

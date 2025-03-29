@@ -31,6 +31,15 @@
     "login_description": "Inicia sesión para acceder a tu cuenta",
     "redirect_info": "Serás redirigido a la página de autenticación central",
     "login_button": "Iniciar sesión",
+    "back_to_home": "Volver a inicio",
+    "user_email_settings": "Configuración del servidor de correo",
+    "smtp_configuration_title": "Configuración del servidor SMTP",
+    "smtp_configuration_desc": "Configure su servidor SMTP para enviar correos.",
+    "imap_configuration_title": "Configuración del servidor IMAP",
+    "imap_configuration_desc": "Configure su servidor IMAP para recibir correos.",
+    "mailboxes_configuration_title": "Configuración de buzones",
+    "mailboxes_configuration_desc": "Configure sus buzones para organizar correos.",
+    "settings": "Configuración",
     "notifications": {
         "email_sync_start": {
             "title": "Iniciando sincronización de correo",
@@ -55,6 +64,27 @@
         "email_sent": {
             "title": "Correo enviado",
             "message": "Correo enviado correctamente a {to}"
+        },
+        "smtp_save_success": {
+            "title": "Configuración SMTP guardada",
+            "message": "La configuración de su servidor SMTP se ha guardado correctamente."
+        },
+        "smtp_save_error": {
+            "title": "Error al guardar la configuración SMTP"
+        },
+        "imap_save_success": {
+            "title": "Configuración IMAP guardada",
+            "message": "La configuración de su servidor IMAP se ha guardado correctamente."
+        },
+        "imap_save_error": {
+            "title": "Error al guardar la configuración IMAP"
+        },
+        "mailboxes_save_success": {
+            "title": "Configuración de buzones guardada",
+            "message": "La configuración de sus buzones se ha guardado correctamente."
+        },
+        "mailboxes_save_error": {
+            "title": "Error al guardar la configuración de buzones"
         }
     },
     "smtp_form": {

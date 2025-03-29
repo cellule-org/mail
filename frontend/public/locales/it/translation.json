@@ -31,6 +31,15 @@
     "login_description": "Effettua l'accesso per accedere al tuo account",
     "redirect_info": "Verrai reindirizzato alla pagina centrale di autenticazione",
     "login_button": "Accedi",
+    "back_to_home": "Torna alla home",
+    "user_email_settings": "Impostazioni del server email",
+    "smtp_configuration_title": "Configurazione server SMTP",
+    "smtp_configuration_desc": "Configura il tuo server SMTP per inviare email.",
+    "imap_configuration_title": "Configurazione server IMAP",
+    "imap_configuration_desc": "Configura il tuo server IMAP per ricevere email.",
+    "mailboxes_configuration_title": "Configurazione caselle",
+    "mailboxes_configuration_desc": "Configura le tue caselle per organizzare le email.",
+    "settings": "Impostazioni",
     "notifications": {
         "email_sync_start": {
             "title": "Inizializzazione sincronizzazione email",
@@ -55,6 +64,27 @@
         "email_sent": {
             "title": "Email inviata",
             "message": "Email inviata con successo a {to}"
+        },
+        "smtp_save_success": {
+            "title": "Configurazione SMTP salvata",
+            "message": "La configurazione del server SMTP è stata salvata con successo."
+        },
+        "smtp_save_error": {
+            "title": "Impossibile salvare la configurazione SMTP"
+        },
+        "imap_save_success": {
+            "title": "Configurazione IMAP salvata",
+            "message": "La configurazione del server IMAP è stata salvata con successo."
+        },
+        "imap_save_error": {
+            "title": "Impossibile salvare la configurazione IMAP"
+        },
+        "mailboxes_save_success": {
+            "title": "Configurazione delle caselle salvata",
+            "message": "La configurazione delle caselle è stata salvata con successo."
+        },
+        "mailboxes_save_error": {
+            "title": "Impossibile salvare la configurazione delle caselle"
         }
     },
     "smtp_form": {

@@ -39,6 +39,7 @@
     "imap_configuration_desc": "Настройте сервер IMAP для получения писем.",
     "mailboxes_configuration_title": "Настройка почтовых ящиков",
     "mailboxes_configuration_desc": "Настройте почтовые ящики для организации писем.",
+    "settings": "Настройки",
     "notifications": {
         "email_sync_start": {
             "title": "Начало синхронизации писем",
@@ -63,6 +64,27 @@
         "email_sent": {
             "title": "Письмо отправлено",
             "message": "Письмо успешно отправлено на адрес {to}"
+        },
+        "smtp_save_success": {
+            "title": "Конфигурация SMTP сохранена",
+            "message": "Конфигурация вашего SMTP-сервера успешно сохранена."
+        },
+        "smtp_save_error": {
+            "title": "Не удалось сохранить конфигурацию SMTP"
+        },
+        "imap_save_success": {
+            "title": "Конфигурация IMAP сохранена",
+            "message": "Конфигурация вашего IMAP-сервера успешно сохранена."
+        },
+        "imap_save_error": {
+            "title": "Не удалось сохранить конфигурацию IMAP"
+        },
+        "mailboxes_save_success": {
+            "title": "Конфигурация почтовых ящиков сохранена",
+            "message": "Конфигурация ваших почтовых ящиков успешно сохранена."
+        },
+        "mailboxes_save_error": {
+            "title": "Не удалось сохранить конфигурацию почтовых ящиков"
         }
     },
     "smtp_form": {

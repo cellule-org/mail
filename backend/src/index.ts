@@ -7,10 +7,15 @@ import { connectToWebSocketServer, createWebSocket, messageHandler } from './web
 import { handleSendEmail, handleReceiveEmail, addFlag, removeFlag, createTransporter, createImapFlow } from './email';
 import { PrismaClient } from '@prisma/client';
 import jwt from 'jsonwebtoken';
-import settingsRouter from './api/settings'; // ajout de l'import du router settings
+
+import settingsRouter from './routes/settings';
+
 import { Transporter } from 'nodemailer';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import { ImapFlow } from 'imapflow';
+import { createLogger } from './utils/logger';
+
+const logger = createLogger('main');
 
 const app = express();
 
@@ -28,11 +33,10 @@ interface UserConnections {
 
 export const userConnections = new Map<string, UserConnections>();
 
-let core_ws: WebSocket | null = null;
 export let mail_ws: WebSocketServer | null = null;
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-    console.error('Request error:', err);
+    logger.error('Request error:', err);
     res.status(500).send({ error: 'Internal Server Error' });
 });
 
@@ -80,13 +84,13 @@ const initializeWebSocket = async (): Promise<void> => {
             //the server is already running
         }
     } catch (err) {
-        console.error(err);
+        logger.error('Failed to initialize WebSocket server');
         process.exit(1);
     }
 };
 
 const handleConnection = async (ws: WebSocket): Promise<void> => {
-    console.log('(MailWS) - New WebSocket connection');
+    logger.info('New WebSocket connection');
     ws.on('message', (message: RawData) => handleMessage(ws, message));
 };
 
@@ -124,7 +128,7 @@ const handleMessage = async (ws: WebSocket, message: RawData): Promise<void> => 
             modifyFlag(ws, data.id, data.userId, '\\Seen', removeFlag);
             break;
         default:
-            console.warn(`Unknown message type: ${type}`);
+            logger.warn(`Unknown message type: ${type}`);
     }
 };
 
@@ -205,7 +209,7 @@ const deleteMail = async (ws: WebSocket, id: string, user_id: string): Promise<v
         });
         sendData(ws, 'delete_success', { id });
     } catch (err) {
-        console.error('Error deleting mail:', err);
+        logger.error('Error deleting mail:', err);
     }
 };
 
@@ -217,7 +221,7 @@ const safeExecute = (func: Function, description: string): void => {
     try {
         func();
     } catch (err) {
-        console.error(`Error ${description}:`, err);
+        logger.error(`Error ${description}:`, err);
     }
 };
 
@@ -239,19 +243,20 @@ const sendData = (ws: WebSocket, type: string, data: any): void => {
 
 const registerCoreEvents = (core_ws: WebSocket): void => {
     ['send_email', 'receive_email'].forEach((id) => {
+        id = "cellule_mail_" + id;
         core_ws.send(JSON.stringify({ type: 'create', data: { id, name: id.replace('_', ' ').toUpperCase() } }));
     });
 };
 
 const handleWebSocketClose = (): void => {
-    console.log('WebSocket connection closed, clearing event and restarting...');
+    logger.warn('WebSocket connection closed, clearing event and restarting...');
     initializeWebSocket();
 };
 
 const startServer = (): void => {
     server.listen(3002, () => {
-        console.log('Server is running on http://localhost:3002');
-        console.log('WebSocket server is running on ws://localhost:3002');
+        logger.info('Server is running on http://localhost:3002');
+        logger.info('WebSocket server is running on ws://localhost:3002');
     });
 };
 

@@ -2,45 +2,17 @@ import express, { Request, Response, NextFunction } from 'express';
 import { PrismaClient } from '@prisma/client';
 import jwt from 'jsonwebtoken';
 import { handleReceiveEmail } from '../email';
+import { ImapConfig, MailboxesConfig, SmtpConfig } from '../types/events';
+import { getCookie } from '../utils/cookies';
+import { createLogger } from '../utils/logger';
+import { ImapFlow } from 'imapflow';
 
 const router = express.Router();
 router.use(express.json());
 const prisma = new PrismaClient();
+const logger = createLogger('settings');
 
-export const getCookie = (cookieHeader: string | undefined, name: string): string | null => {
-    if (!cookieHeader) return null;
-    const cookies = cookieHeader.split(';').map(v => v.trim());
-    for (const cookie of cookies) {
-        const [key, value] = cookie.split('=');
-        if (key === name) return value;
-    }
-    return null;
-};
-
-type SmtpConfig = {
-    host: string
-    port: number
-    username: string
-    password: string
-    secure: boolean
-}
-
-type ImapConfig = {
-    host: string
-    port: number
-    username: string
-    password: string
-    secure: boolean
-}
-
-type MailboxesConfig = {
-    inbox: string
-    sent: string
-    drafts: string
-    trash: string
-    spam: string
-}
-const getUserConfig = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+const getUserConfig = async (req: Request, res: Response): Promise<void> => {
     try {
         const token = getCookie(req.headers.cookie, 'accessToken');
         if (!token) { res.status(401).json({ error: 'Unauthorized' }); return; }
@@ -62,8 +34,8 @@ const getUserConfig = async (req: Request, res: Response, next: NextFunction): P
         if (user.imap) user.imap.password = '';
 
         res.json({ success: true, ...user });
-    } catch (err) {
-        console.error(err);
+    } catch (err: any) {
+        logger.error(err);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
@@ -80,7 +52,7 @@ const validateAllConfig = async (user_id: string) => {
     }
 };
 
-router.post('/imap', async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+router.post('/imap', async (req: Request, res: Response): Promise<void> => {
     try {
         const token = getCookie(req.headers.cookie, 'accessToken');
         if (!token) { res.status(401).json({ error: 'Unauthorized' }); return; }
@@ -106,13 +78,55 @@ router.post('/imap', async (req: Request, res: Response, next: NextFunction): Pr
         validateAllConfig(userId);
 
         res.json({ success: true, imap: updatedUser.imap });
-    } catch (err) {
-        console.error(err);
+    } catch (err: any) {
+        logger.error(err);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 
-router.post('/smtp', async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+router.get('/mailboxes-list', async (req: Request, res: Response): Promise<void> => {
+    try {
+        const token = getCookie(req.headers.cookie, 'accessToken');
+        if (!token) { res.status(401).json({ error: 'Unauthorized' }); return; }
+        const jwtObject = jwt.decode(token) as { id: string } | null;
+        if (!jwtObject) { res.status(401).json({ error: 'Unauthorized' }); return; }
+        const userId = jwtObject.id;
+
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: { imap: true }
+        });
+
+        if (!user?.imap) {
+            res.status(404).json({ error: 'IMAP configuration not found' });
+            return;
+        }
+
+        const client = new ImapFlow({
+            host: user.imap.host,
+            port: user.imap.port,
+            secure: user.imap.secure,
+            auth: {
+                user: user.imap.username,
+                pass: user.imap.password
+            },
+            logger: false
+        });
+
+        await client.connect();
+
+        const mailboxes = await client.list();
+
+        await client.logout();
+
+        res.json({ success: true, mailboxes });
+    } catch (err: any) {
+        logger.error(err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+router.post('/smtp', async (req: Request, res: Response): Promise<void> => {
     try {
         const token = getCookie(req.headers.cookie, 'accessToken');
         if (!token) { res.status(401).json({ error: 'Unauthorized' }); return; }
@@ -138,13 +152,13 @@ router.post('/smtp', async (req: Request, res: Response, next: NextFunction): Pr
         validateAllConfig(userId);
 
         res.json({ success: true, smtp: updatedUser.smtp });
-    } catch (err) {
-        console.error(err);
+    } catch (err: any) {
+        logger.error(err);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 
-router.post('/mailboxes', async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+router.post('/mailboxes', async (req: Request, res: Response): Promise<void> => {
     try {
         const token = getCookie(req.headers.cookie, 'accessToken');
         if (!token) { res.status(401).json({ error: 'Unauthorized' }); return; }
@@ -170,8 +184,8 @@ router.post('/mailboxes', async (req: Request, res: Response, next: NextFunction
         validateAllConfig(userId);
 
         res.json({ success: true, mailboxes: updatedUser.mailboxes });
-    } catch (err) {
-        console.error(err);
+    } catch (err: any) {
+        logger.error(err);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });

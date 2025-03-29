@@ -97,7 +97,11 @@ const EmailNav = ({ tags, mailboxes, onNewMessage, className, ...props }: EmailN
                 )}
             </section>
 
-            <ModeToggle />
+
+            <section className="flex flex-col gap-4">
+                <Button asChild variant={"outline"}><Link to="/settings">{t('settings')}</Link></Button>
+                <ModeToggle />
+            </section>
         </nav>
     );
 }
