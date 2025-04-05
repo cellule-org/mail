@@ -4,8 +4,9 @@ import { SmtpForm } from "@/components/ui/smtp-form"
 import { ImapForm } from "@/components/ui/imap-form"
 import { Link } from "react-router"
 import { MailboxesForm } from "@/components/ui/mailboxes-form"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useTranslation } from "react-i18next"
+import { useGet } from "@/hooks/use-get"
 
 type Config = {
     smtp?: any;
@@ -16,25 +17,33 @@ type Config = {
 export default function SettingsPage() {
     const { t } = useTranslation()
     const [config, setConfig] = useState<Config>({})
+    const [availableMailboxes, setAvailableMailboxes] = useState<string[]>([])
 
-    useEffect(() => {
-        const fetchConfig = async () => {
-            try {
-                const res = await fetch("/api/settings")
-                const data = await res.json()
-                if (data.success) {
-                    setConfig({
-                        smtp: data.smtp,
-                        imap: data.imap,
-                        mailboxes: data.mailboxes,
-                    })
-                }
-            } catch (error) {
-                console.error("Erreur lors du chargement de la configuration", error)
+    useGet<string[]>({
+        url: "/api/settings/mailboxes",
+        onSuccess: (data, success) => {
+            if (success) {
+                setAvailableMailboxes(data)
             }
         }
-        fetchConfig()
-    }, [])
+    })
+
+    useGet<Config>({
+        url: "/api/settings",
+        onSuccess: (data, success) => {
+            if (success) {
+                setConfig({
+                    smtp: data.smtp,
+                    imap: data.imap,
+                    mailboxes: data.mailboxes,
+                })
+                setAvailableMailboxes(data.mailboxes || [])
+            }
+        },
+        onError: (error) => {
+            console.error("Erreur lors du chargement de la configuration", error)
+        }
+    })
 
     return (
         <div className="h-fit w-full flex justify-center px-56">
@@ -70,7 +79,7 @@ export default function SettingsPage() {
                                 <CardDescription>{t("imap_configuration_desc")}</CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <ImapForm defaultValues={config.imap} />
+                                <ImapForm defaultValues={config.imap} setMailboxes={setAvailableMailboxes} />
                             </CardContent>
                         </Card>
                     </TabsContent>
@@ -82,7 +91,7 @@ export default function SettingsPage() {
                                 <CardDescription>{t("mailboxes_configuration_desc")}</CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <MailboxesForm defaultValues={config.mailboxes} />
+                                <MailboxesForm defaultValues={config.mailboxes} mailboxes={availableMailboxes} />
                             </CardContent>
                         </Card>
                     </TabsContent>

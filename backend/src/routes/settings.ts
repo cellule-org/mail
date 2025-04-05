@@ -84,7 +84,7 @@ router.post('/imap', async (req: Request, res: Response): Promise<void> => {
     }
 });
 
-router.get('/mailboxes-list', async (req: Request, res: Response): Promise<void> => {
+router.get('/mailboxes', async (req: Request, res: Response): Promise<void> => {
     try {
         const token = getCookie(req.headers.cookie, 'accessToken');
         if (!token) { res.status(401).json({ error: 'Unauthorized' }); return; }
@@ -116,10 +116,10 @@ router.get('/mailboxes-list', async (req: Request, res: Response): Promise<void>
         await client.connect();
 
         const mailboxes = await client.list();
-
+        console.log(mailboxes);
         await client.logout();
 
-        res.json({ success: true, mailboxes });
+        res.json({ success: true, data: mailboxes.map((m) => m.path) });
     } catch (err: any) {
         logger.error(err);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -183,7 +183,7 @@ router.post('/mailboxes', async (req: Request, res: Response): Promise<void> => 
 
         validateAllConfig(userId);
 
-        res.json({ success: true, mailboxes: updatedUser.mailboxes });
+        res.json({ success: true, data: updatedUser.mailboxes });
     } catch (err: any) {
         logger.error(err);
         res.status(500).json({ error: 'Internal Server Error' });

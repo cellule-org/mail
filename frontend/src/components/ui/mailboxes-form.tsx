@@ -5,7 +5,14 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
+
 import { toast } from "sonner"
 import { saveMailboxesConfig } from "@/lib/actions"
 
@@ -16,7 +23,8 @@ type MailboxesFormProps = {
         drafts: string;
         trash: string;
         spam: string;
-    }
+    },
+    mailboxes: string[];
 }
 
 const mailboxesFormSchema = z.object({
@@ -29,7 +37,7 @@ const mailboxesFormSchema = z.object({
 
 type MailboxesFormValues = z.infer<typeof mailboxesFormSchema>
 
-export function MailboxesForm({ defaultValues }: MailboxesFormProps) {
+export function MailboxesForm({ defaultValues, mailboxes }: MailboxesFormProps) {
     const { t } = useTranslation()
     const [isLoading, setIsLoading] = useState(false)
 
@@ -76,7 +84,18 @@ export function MailboxesForm({ defaultValues }: MailboxesFormProps) {
                         <FormItem>
                             <FormLabel>{t("mailboxes_form.inbox")}</FormLabel>
                             <FormControl>
-                                <Input placeholder="[GMAIL]/Inbox" {...field} />
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder={t("mailbox")} />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {mailboxes.map((mailbox) => (
+                                            <SelectItem key={mailbox} value={mailbox}>
+                                                {mailbox}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
                             </FormControl>
                             <FormDescription>{t("mailboxes_form.inbox_description")}</FormDescription>
                             <FormMessage />
@@ -91,7 +110,18 @@ export function MailboxesForm({ defaultValues }: MailboxesFormProps) {
                         <FormItem>
                             <FormLabel>{t("mailboxes_form.sent")}</FormLabel>
                             <FormControl>
-                                <Input placeholder="[GMAIL]/Sent" {...field} />
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder={t("mailbox")} />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {mailboxes.map((mailbox) => (
+                                            <SelectItem key={mailbox} value={mailbox}>
+                                                {mailbox}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
                             </FormControl>
                             <FormDescription>{t("mailboxes_form.sent_description")}</FormDescription>
                             <FormMessage />
@@ -107,7 +137,18 @@ export function MailboxesForm({ defaultValues }: MailboxesFormProps) {
                         <FormItem>
                             <FormLabel>{t("mailboxes_form.drafts")}</FormLabel>
                             <FormControl>
-                                <Input placeholder="[GMAIL]/Drafts" {...field} />
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder={t("mailbox")} />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {mailboxes.map((mailbox) => (
+                                            <SelectItem key={mailbox} value={mailbox}>
+                                                {mailbox}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
                             </FormControl>
                             <FormDescription>{t("mailboxes_form.drafts_description")}</FormDescription>
                             <FormMessage />
@@ -122,7 +163,18 @@ export function MailboxesForm({ defaultValues }: MailboxesFormProps) {
                         <FormItem>
                             <FormLabel>{t("mailboxes_form.trash")}</FormLabel>
                             <FormControl>
-                                <Input placeholder="[GMAIL]/Trash" {...field} />
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder={t("mailbox")} />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {mailboxes.map((mailbox) => (
+                                            <SelectItem key={mailbox} value={mailbox}>
+                                                {mailbox}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
                             </FormControl>
                             <FormDescription>{t("mailboxes_form.trash_description")}</FormDescription>
                             <FormMessage />
@@ -137,7 +189,18 @@ export function MailboxesForm({ defaultValues }: MailboxesFormProps) {
                         <FormItem>
                             <FormLabel>{t("mailboxes_form.spam")}</FormLabel>
                             <FormControl>
-                                <Input placeholder="[GMAIL]/Spam" {...field} />
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder={t("mailbox")} />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {mailboxes.map((mailbox) => (
+                                            <SelectItem key={mailbox} value={mailbox}>
+                                                {mailbox}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
                             </FormControl>
                             <FormDescription>{t("mailboxes_form.spam_description")}</FormDescription>
                             <FormMessage />

@@ -11,8 +11,6 @@ import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
 import { toast } from "sonner"
 import { saveImapConfig } from "@/lib/actions"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { CheckCircle2 } from "lucide-react"
 
 const imapFormSchema = z.object({
     host: z.string().min(1, { message: "Host is required" }),
@@ -31,13 +29,13 @@ type ImapFormProps = {
         username: string;
         password: string;
         secure: boolean;
-    }
+    },
+    setMailboxes: (mailboxes: string[]) => void;
 }
 
-export function ImapForm({ defaultValues }: ImapFormProps) {
+export function ImapForm({ defaultValues, setMailboxes }: ImapFormProps) {
     const { t } = useTranslation()
     const [isLoading, setIsLoading] = useState(false)
-    const [mailboxes, setMailboxes] = useState<string[]>([])
 
     const form = useForm<ImapFormValues>({
         resolver: zodResolver(imapFormSchema),
@@ -163,28 +161,6 @@ export function ImapForm({ defaultValues }: ImapFormProps) {
                     </Button>
                 </form>
             </Form>
-
-            {mailboxes.length > 0 && (
-                <Card className="mt-6 animate-in fade-in duration-300">
-                    <CardHeader>
-                        <CardTitle className="flex items-center">
-                            <CheckCircle2 className="mr-2 h-5 w-5 text-green-500" />
-                            {t("imap_form.available_mailboxes")}
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-                            {mailboxes.map((mailbox, index) => (
-                                <div
-                                    key={index}
-                                    className="border rounded-md p-2 bg-muted/50">
-                                    {mailbox}
-                                </div>
-                            ))}
-                        </div>
-                    </CardContent>
-                </Card>
-            )}
         </div>
     )
 }
