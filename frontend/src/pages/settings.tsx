@@ -39,9 +39,6 @@ export default function SettingsPage() {
                 })
                 setAvailableMailboxes(data.mailboxes || [])
             }
-        },
-        onError: (error) => {
-            console.error("Erreur lors du chargement de la configuration", error)
         }
     })
 
