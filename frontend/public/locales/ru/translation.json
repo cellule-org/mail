@@ -44,6 +44,7 @@
     "close": "Закрыть",
     "light_mode": "Светлый режим",
     "dark_mode": "Темный режим",
+    "logout": "Выйти",
     "notifications": {
         "email_sync_start": {
             "title": "Начало синхронизации писем",

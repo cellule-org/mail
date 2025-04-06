@@ -44,6 +44,7 @@
     "close": "Fermer",
     "light_mode": "Mode clair",
     "dark_mode": "Mode sombre",
+    "logout": "Se déconnecter",
     "notifications": {
         "email_sync_start": {
             "title": "Initialisation de la synchronisation",

@@ -33,6 +33,7 @@
     "redirect_info": "Serás redirigido a la página de autenticación central",
     "login_button": "Iniciar sesión",
     "back_to_home": "Volver a inicio",
+    "logout": "Cerrar sesión",
     "user_email_settings": "Configuración del servidor de correo",
     "smtp_configuration_title": "Configuración del servidor SMTP",
     "smtp_configuration_desc": "Configure su servidor SMTP para enviar correos.",

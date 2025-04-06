@@ -33,6 +33,7 @@
     "redirect_info": "You will be redirected to the core authentication page",
     "login_button": "Log in",
     "back_to_home": "Back to home",
+    "logout": "Logout",
     "user_email_settings": "User Email Server Settings",
     "smtp_configuration_title": "SMTP Server Configuration",
     "smtp_configuration_desc": "Configure your SMTP server for sending emails.",

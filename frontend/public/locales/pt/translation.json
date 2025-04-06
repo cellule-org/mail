@@ -44,6 +44,7 @@
     "close": "Fechar",
     "light_mode": "Modo claro",
     "dark_mode": "Modo escuro",
+    "logout": "Sair",
     "notifications": {
         "email_sync_start": {
             "title": "Iniciando sincronização de emails",

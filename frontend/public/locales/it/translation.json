@@ -44,6 +44,7 @@
     "close": "Chiudi",
     "light_mode": "Modalità chiara",
     "dark_mode": "Modalità scura",
+    "logout": "Disconnettersi",
     "notifications": {
         "email_sync_start": {
             "title": "Inizializzazione sincronizzazione email",

@@ -44,6 +44,7 @@
     "close": "Schließen",
     "light_mode": "Heller Modus",
     "dark_mode": "Dunkler Modus",
+    "logout": "Abmelden",
     "notifications": {
         "email_sync_start": {
             "title": "E-Mail-Synchronisierung wird gestartet",
