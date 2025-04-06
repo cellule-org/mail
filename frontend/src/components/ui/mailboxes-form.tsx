@@ -89,7 +89,7 @@ export function MailboxesForm({ defaultValues, mailboxes }: MailboxesFormProps) 
                                         <SelectValue placeholder={t("mailbox")} />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {mailboxes.map((mailbox) => (
+                                        {mailboxes && mailboxes.map && mailboxes.map((mailbox) => (
                                             <SelectItem key={mailbox} value={mailbox}>
                                                 {mailbox}
                                             </SelectItem>
@@ -115,7 +115,7 @@ export function MailboxesForm({ defaultValues, mailboxes }: MailboxesFormProps) 
                                         <SelectValue placeholder={t("mailbox")} />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {mailboxes.map((mailbox) => (
+                                        {mailboxes && mailboxes.map && mailboxes.map((mailbox) => (
                                             <SelectItem key={mailbox} value={mailbox}>
                                                 {mailbox}
                                             </SelectItem>
@@ -142,7 +142,7 @@ export function MailboxesForm({ defaultValues, mailboxes }: MailboxesFormProps) 
                                         <SelectValue placeholder={t("mailbox")} />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {mailboxes.map((mailbox) => (
+                                        {mailboxes && mailboxes.map && mailboxes.map((mailbox) => (
                                             <SelectItem key={mailbox} value={mailbox}>
                                                 {mailbox}
                                             </SelectItem>
@@ -168,7 +168,7 @@ export function MailboxesForm({ defaultValues, mailboxes }: MailboxesFormProps) 
                                         <SelectValue placeholder={t("mailbox")} />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {mailboxes.map((mailbox) => (
+                                        {mailboxes && mailboxes.map && mailboxes.map((mailbox) => (
                                             <SelectItem key={mailbox} value={mailbox}>
                                                 {mailbox}
                                             </SelectItem>
@@ -194,7 +194,7 @@ export function MailboxesForm({ defaultValues, mailboxes }: MailboxesFormProps) 
                                         <SelectValue placeholder={t("mailbox")} />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {mailboxes.map((mailbox) => (
+                                        {mailboxes && mailboxes.map && mailboxes.map((mailbox) => (
                                             <SelectItem key={mailbox} value={mailbox}>
                                                 {mailbox}
                                             </SelectItem>
