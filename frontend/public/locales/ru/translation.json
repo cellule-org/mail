@@ -42,6 +42,8 @@
     "mailboxes_configuration_desc": "Настройте почтовые ящики для организации писем.",
     "settings": "Настройки",
     "close": "Закрыть",
+    "light_mode": "Светлый режим",
+    "dark_mode": "Темный режим",
     "notifications": {
         "email_sync_start": {
             "title": "Начало синхронизации писем",

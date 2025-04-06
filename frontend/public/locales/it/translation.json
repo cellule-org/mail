@@ -42,6 +42,8 @@
     "mailboxes_configuration_desc": "Configura le tue caselle per organizzare le email.",
     "settings": "Impostazioni",
     "close": "Chiudi",
+    "light_mode": "Modalità chiara",
+    "dark_mode": "Modalità scura",
     "notifications": {
         "email_sync_start": {
             "title": "Inizializzazione sincronizzazione email",

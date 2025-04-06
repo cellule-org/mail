@@ -3,9 +3,9 @@ import { Email } from "./email-list"
 import { useTranslation } from "react-i18next"
 import { format, formatDistanceToNow, Locale } from 'date-fns'
 import { Button } from "./button"
-import { Reply, Forward, X, Trash, MailOpen, MailCheck } from "lucide-react"
-import sanitizeHtml from "sanitize-html";
+import { Reply, Forward, X, Trash, MailOpen, MailCheck, MoonIcon, SunIcon } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip"
+import { useState } from "react"
 
 export interface EmailViewerProps {
     email: Email | null
@@ -29,6 +29,7 @@ export default function EmailViewer({
     onMarkRead,
     ...props
 }: EmailViewerProps & ComponentProps<"section">) {
+    const [whiteBackground, setWhiteBackground] = useState(false);
     const { t } = useTranslation();
 
 
@@ -39,35 +40,16 @@ export default function EmailViewer({
     if (!email) {
         return;
     }
-    const cleanHtml = sanitizeHtml(email.text, {
-        allowedTags: [
-            ...sanitizeHtml.defaults.allowedTags.filter(tag => tag !== "script"),
-            'img', 'a', 'p', 'b', 'i', 'strong', 'em', 'br', 'div', 'span'
-        ],
-        allowedAttributes: {
-            ...sanitizeHtml.defaults.allowedAttributes,
-            'a': ['href', 'target', 'rel'],
-            'img': ['src', 'alt'],
-        },
-        transformTags: {
-            'a': (_tagName, attribs) => {
-                return {
-                    tagName: 'a',
-                    attribs: {
-                        ...attribs,
-                        target: '_blank',
-                        rel: 'noopener noreferrer'
-                    }
-                };
-            }
-        }
-    });
+
+    const cleanHtml = email.text
+        .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+        .replace(/<a\b/gi, '<a target="_blank" rel="noopener noreferrer"');
 
     const formattedTime = email.date ? format(new Date(email.date), 'dd/MM/yyyy HH:mm', { locale }) : '';
     const relativeTime = email.date ? getRelativeTime(new Date(email.date)) : '';
 
     return (
-        <section className="space-y-4 min-h-full flex flex-col gap-4 pt-4" {...props}>
+        <section className="space-y-4 min-h-full h-full flex flex-col gap-4 pt-4" {...props}>
             <div className="flex justify-between items-center w-full px-4">
                 <div className="flex gap-2">
                     {onDelete && email && (
@@ -121,6 +103,25 @@ export default function EmailViewer({
                             </TooltipContent>
                         </Tooltip>
                     )}
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="flex items-center gap-1"
+                                onClick={() => setWhiteBackground(!whiteBackground)}
+                            >
+                                {whiteBackground ? (
+                                    <MoonIcon size={16} />
+                                ) : (
+                                    <SunIcon size={16} />
+                                )}
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>{whiteBackground ? t('dark_mode') : t('light_mode')}</p>
+                        </TooltipContent>
+                    </Tooltip>
                 </div>
                 <Tooltip>
                     <TooltipTrigger asChild>
@@ -153,8 +154,29 @@ export default function EmailViewer({
                 </div>
             </div>
 
-            <div className="px-4">
-                <div dangerouslySetInnerHTML={{ __html: cleanHtml }} />
+            <div className="px-4 h-full">
+                <iframe
+                    style={{ backgroundColor: whiteBackground ? 'var(--foreground)' : 'var(--background)' }}
+                    srcDoc={`
+                        <html>
+                            <head>
+                                <base target="_blank">
+                                <style>
+                                    body {
+                                        width: auto !important;
+                                        margin: 0;
+                                        padding: 16px;
+                                        font-family: system-ui, -apple-system, sans-serif;
+                                    }
+                                    a { color: inherit; }
+                                </style>
+                            </head>
+                            <body>${cleanHtml}</body>
+                        </html>
+                    `}
+                    className="w-full h-full border-none"
+                    title="Email content"
+                />
             </div>
 
             <div className="flex gap-2 px-4">

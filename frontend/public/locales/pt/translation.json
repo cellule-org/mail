@@ -42,6 +42,8 @@
     "mailboxes_configuration_desc": "Configure suas caixas para organizar emails.",
     "settings": "Configurações",
     "close": "Fechar",
+    "light_mode": "Modo claro",
+    "dark_mode": "Modo escuro",
     "notifications": {
         "email_sync_start": {
             "title": "Iniciando sincronização de emails",
