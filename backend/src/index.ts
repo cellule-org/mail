@@ -8,13 +8,14 @@ import { handleSendEmail, handleReceiveEmail, addFlag, removeFlag, createTranspo
 import { PrismaClient } from '@prisma/client';
 import jwt from 'jsonwebtoken';
 
-import settingsRouter from './routes/settings';
+import settingsRouter, { validateAllConfig } from './routes/settings';
 
 import { Transporter } from 'nodemailer';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import { ImapFlow } from 'imapflow';
 import { createLogger } from './utils/logger';
 import { checkIfLatestVersion } from './utils/version';
+import { log } from 'console';
 
 
 
@@ -274,9 +275,32 @@ const handleWebSocketClose = (): void => {
 };
 
 const startServer = (): void => {
-    server.listen(3002, () => {
-        logger.info('Server is running on http://localhost:3002');
-        logger.info('WebSocket server is running on ws://localhost:3002');
+    logger.info('Initializing IMAP/SMTP connections for all users...');
+    prisma.user.findMany({
+        include: {
+            imap: true,
+            smtp: true
+        }
+    }).then(users => {
+        if (!users) {
+            logger.error('No users found');
+            return;
+        }
+        users.map(async (user) => {
+            if (!user.imap || !user.smtp) return;
+            userConnections.set(user.id, {
+                transporter: createTransporter(user.smtp),
+                imap_flow: createImapFlow(user.imap)
+            });
+            await validateAllConfig(user.id)
+        });
+    }).then(() => {
+        server.listen(3002, () => {
+            logger.info('Server is running on http://localhost:3002');
+            logger.info('WebSocket server is running on ws://localhost:3002');
+        });
+    }).catch(err => {
+        logger.error('Error starting server:', err);
     });
 };
 

@@ -42,7 +42,7 @@ const getUserConfig = async (req: Request, res: Response): Promise<void> => {
 
 router.get('/', getUserConfig);
 
-const validateAllConfig = async (user_id: string) => {
+export const validateAllConfig = async (user_id: string) => {
     const user = await prisma.user.findUnique({
         where: { id: user_id },
         select: { smtp: true, imap: true, mailboxes: true }

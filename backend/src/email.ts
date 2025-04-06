@@ -185,8 +185,6 @@ export const handleReceiveEmail = async (user_id: string) => {
         return;
     }
     await client.connect();
-    const mailboxes = await client.list();
-    logger.info(`Mailboxes: ${mailboxes.map(mailbox => mailbox.path).join(', ')}`);
     let supported_mailboxes = [user.mailboxes.sent, user.mailboxes.drafts, user.mailboxes.trash, user.mailboxes.spam]; // Only process these mailboxes
 
     for (let folder of await client.list()) {
