@@ -1,7 +1,7 @@
 #!/bin/bash
 
 set -o allexport
-source .env
+source shared.env
 set +o allexport
 
 
