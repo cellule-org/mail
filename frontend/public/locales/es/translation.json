@@ -1,1 +1,133 @@
-{}
+{
+    "categories": "Categorías",
+    "mailbox": "Buzón",
+    "inbox": "Bandeja de entrada",
+    "sent": "Enviados",
+    "drafts": "Borradores",
+    "trash": "Papelera",
+    "spam": "Correo no deseado",
+    "new_message": "Nuevo mensaje",
+    "send_message": "Enviar mensaje",
+    "send_reply": "Enviar respuesta",
+    "sending": "Enviando...",
+    "to": "Para",
+    "cc": "CC",
+    "bcc": "CCI",
+    "subject": "Asunto",
+    "message": "Mensaje",
+    "attachments": "Adjuntos",
+    "search": "Buscar correos",
+    "body_placeholder": "Escribe tu mensaje aquí...",
+    "loading": "Cargando...",
+    "mark_as_read": "Marcar como leído",
+    "mark_as_unread": "Marcar como no leído",
+    "archive": "Archivar",
+    "delete": "Eliminar",
+    "reply": "Responder",
+    "reply_all": "Responder a todos",
+    "forward": "Reenviar",
+    "copy_email": "Copiar correo",
+    "block": "Bloquear",
+    "login_title": "Iniciar sesión",
+    "login_description": "Inicia sesión para acceder a tu cuenta",
+    "redirect_info": "Serás redirigido a la página de autenticación central",
+    "login_button": "Iniciar sesión",
+    "back_to_home": "Volver a inicio",
+    "logout": "Cerrar sesión",
+    "user_email_settings": "Configuración del servidor de correo",
+    "smtp_configuration_title": "Configuración del servidor SMTP",
+    "smtp_configuration_desc": "Configure su servidor SMTP para enviar correos.",
+    "imap_configuration_title": "Configuración del servidor IMAP",
+    "imap_configuration_desc": "Configure su servidor IMAP para recibir correos.",
+    "mailboxes_configuration_title": "Configuración de buzones",
+    "mailboxes_configuration_desc": "Configure sus buzones para organizar correos.",
+    "settings": "Configuración",
+    "close": "Cerrar",
+    "light_mode": "Modo claro",
+    "dark_mode": "Modo oscuro",
+    "notifications": {
+        "email_sync_start": {
+            "title": "Iniciando sincronización de correo",
+            "message": "Por favor, espere mientras sincronizamos sus correos electrónicos..."
+        },
+        "email_sync_complete": {
+            "title": "Sincronización completada",
+            "message": "Sus correos electrónicos se han sincronizado correctamente."
+        },
+        "email_send_error": {
+            "title": "Error al enviar correo",
+            "message": "Se produjo un error al enviar su correo."
+        },
+        "email_send_error_no_smtp": {
+            "title": "Error al enviar correo",
+            "message": "No se encontró configuración SMTP"
+        },
+        "email_sending": {
+            "title": "Enviando correo",
+            "message": "Por favor, espere mientras enviamos su correo..."
+        },
+        "email_sent": {
+            "title": "Correo enviado",
+            "message": "Correo enviado correctamente a {to}"
+        },
+        "smtp_save_success": {
+            "title": "Configuración SMTP guardada",
+            "message": "La configuración de su servidor SMTP se ha guardado correctamente."
+        },
+        "smtp_save_error": {
+            "title": "Error al guardar la configuración SMTP"
+        },
+        "imap_save_success": {
+            "title": "Configuración IMAP guardada",
+            "message": "La configuración de su servidor IMAP se ha guardado correctamente."
+        },
+        "imap_save_error": {
+            "title": "Error al guardar la configuración IMAP"
+        },
+        "mailboxes_save_success": {
+            "title": "Configuración de buzones guardada",
+            "message": "La configuración de sus buzones se ha guardado correctamente."
+        },
+        "mailboxes_save_error": {
+            "title": "Error al guardar la configuración de buzones"
+        }
+    },
+    "smtp_form": {
+        "host": "Servidor",
+        "host_description": "Nombre del servidor SMTP",
+        "port": "Puerto",
+        "port_description": "Puertos comunes: 25, 465, 587, 2525",
+        "username": "Nombre de usuario",
+        "password": "Contraseña",
+        "secure_label": "Usar conexión segura (TLS/SSL)",
+        "secure_description": "Activar para conexiones seguras en los puertos 465 o 587",
+        "submit": "Guardar configuración SMTP",
+        "saving": "Guardando..."
+    },
+    "imap_form": {
+        "host": "Servidor",
+        "host_description": "Nombre del servidor IMAP",
+        "port": "Puerto",
+        "port_description": "Puertos comunes: 143, 993 (SSL)",
+        "username": "Nombre de usuario",
+        "password": "Contraseña",
+        "secure_label": "Usar conexión segura (SSL/TLS)",
+        "secure_description": "Activar para conexiones seguras en el puerto 993",
+        "submit": "Guardar configuración IMAP",
+        "saving": "Guardando..."
+    },
+    "mailboxes_form": {
+        "inbox": "Bandeja de entrada",
+        "inbox_description": "Introduce el nombre de tu bandeja de entrada.",
+        "sent": "Enviados",
+        "sent_description": "Introduce el nombre de tu carpeta de enviados.",
+        "drafts": "Borradores",
+        "drafts_description": "Introduce el nombre de tus borradores.",
+        "trash": "Papelera",
+        "trash_description": "Introduce el nombre de la papelera.",
+        "spam": "Correo no deseado",
+        "spam_description": "Introduce el nombre del spam.",
+        "submit": "Guardar configuración de buzones",
+        "saving": "Guardando..."
+    }
+}

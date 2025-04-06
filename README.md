@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-This project is called "mail" and is designed to provide a starting point for developing a mail client and an SMTP server.
+This project, named "Mail", is a mail client component of the Cellule ecosystem. It utilizes SMTP and IMAP protocols to connect with mail servers, allowing users to send, receive, and manage emails through a modern interface while integrating seamlessly with other Cellule services.
 
 ## Features
 

@@ -7,10 +7,16 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "outDir": "./build",
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "typeRoots": [
+      "node_modules/@types",
+      "./backend/types"
+    ]
   },
   "include": [
     "src",
-    "src/ws-server.ts"
+    "backend/types/**/*",
+    "src/ws-server.ts",
+    "src/env.d.ts"
   ]
 }

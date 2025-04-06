@@ -2,6 +2,11 @@
 
 @plugin "tailwindcss-animate";
 
+@plugin 'tailwind-scrollbar' {
+  nocompatible: true;
+  preferredStrategy: 'pseudoelements';
+}
+
 @custom-variant dark (&:is(.dark *));
 
 :root {
@@ -121,4 +126,14 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@layer utilities {
+  .scrollbar {
+    @apply scrollbar-thin scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-thumb-neutral-300 scrollbar-track-transparent dark:scrollbar-thumb-neutral-900;
+  }
+}
+
+button {
+  @apply cursor-pointer;
 }

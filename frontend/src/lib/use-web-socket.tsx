@@ -1,3 +1,4 @@
+import { getCookie } from '@/pages/login';
 import { useState, useEffect, useCallback, useRef } from 'react';
 
 type ConnectionStatus = 'connecting' | 'open' | 'closing' | 'closed' | 'error';
@@ -89,9 +90,11 @@ export function useWebSocket({
         }
     }, [url, protocols, reconnectAttempts, reconnectInterval, onOpen, onClose, onError, onMessage]);
 
-    const sendMessage = useCallback((message: string | WebSocketMessage) => {
+    const sendMessage = useCallback((message: WebSocketMessage) => {
         if (webSocketRef.current && webSocketRef.current.readyState === WebSocket.OPEN) {
-            const messageToSend = typeof message === 'string' ? message : JSON.stringify(message);
+            const token = getCookie("accessToken");
+            const messageWithAuth = { ...message, auth: { accessToken: token } };
+            const messageToSend = JSON.stringify(messageWithAuth);
             webSocketRef.current.send(messageToSend);
             return true;
         }

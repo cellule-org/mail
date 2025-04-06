@@ -1,1 +1,133 @@
-{}
+{
+    "categories": "Categorie",
+    "mailbox": "Casella di posta",
+    "inbox": "Posta in arrivo",
+    "sent": "Inviati",
+    "drafts": "Bozze",
+    "trash": "Cestino",
+    "spam": "Spam",
+    "new_message": "Nuovo Messaggio",
+    "send_message": "Invia Messaggio",
+    "send_reply": "Invia Risposta",
+    "sending": "Invio in corso...",
+    "to": "A",
+    "cc": "CC",
+    "bcc": "Ccn",
+    "subject": "Oggetto",
+    "message": "Messaggio",
+    "attachments": "Allegati",
+    "search": "Cerca email",
+    "body_placeholder": "Scrivi il tuo messaggio qui...",
+    "loading": "Caricamento...",
+    "mark_as_read": "Segna come letto",
+    "mark_as_unread": "Segna come non letto",
+    "archive": "Archivia",
+    "delete": "Elimina",
+    "reply": "Rispondi",
+    "reply_all": "Rispondi a tutti",
+    "forward": "Inoltra",
+    "copy_email": "Copia email",
+    "block": "Blocca",
+    "login_title": "Accesso",
+    "login_description": "Effettua l'accesso per accedere al tuo account",
+    "redirect_info": "Verrai reindirizzato alla pagina centrale di autenticazione",
+    "login_button": "Accedi",
+    "back_to_home": "Torna alla home",
+    "user_email_settings": "Impostazioni del server email",
+    "smtp_configuration_title": "Configurazione server SMTP",
+    "smtp_configuration_desc": "Configura il tuo server SMTP per inviare email.",
+    "imap_configuration_title": "Configurazione server IMAP",
+    "imap_configuration_desc": "Configura il tuo server IMAP per ricevere email.",
+    "mailboxes_configuration_title": "Configurazione caselle",
+    "mailboxes_configuration_desc": "Configura le tue caselle per organizzare le email.",
+    "settings": "Impostazioni",
+    "close": "Chiudi",
+    "light_mode": "Modalità chiara",
+    "dark_mode": "Modalità scura",
+    "logout": "Disconnettersi",
+    "notifications": {
+        "email_sync_start": {
+            "title": "Inizializzazione sincronizzazione email",
+            "message": "Attendere mentre sincronizziamo le tue email..."
+        },
+        "email_sync_complete": {
+            "title": "Sincronizzazione email completata",
+            "message": "Le tue email sono state sincronizzate con successo."
+        },
+        "email_send_error": {
+            "title": "Errore nell'invio dell'email",
+            "message": "Si è verificato un errore durante l'invio dell'email."
+        },
+        "email_send_error_no_smtp": {
+            "title": "Errore nell'invio dell'email",
+            "message": "Configurazione SMTP non trovata"
+        },
+        "email_sending": {
+            "title": "Invio email in corso",
+            "message": "Attendere mentre inviamo la tua email..."
+        },
+        "email_sent": {
+            "title": "Email inviata",
+            "message": "Email inviata con successo a {to}"
+        },
+        "smtp_save_success": {
+            "title": "Configurazione SMTP salvata",
+            "message": "La configurazione del server SMTP è stata salvata con successo."
+        },
+        "smtp_save_error": {
+            "title": "Impossibile salvare la configurazione SMTP"
+        },
+        "imap_save_success": {
+            "title": "Configurazione IMAP salvata",
+            "message": "La configurazione del server IMAP è stata salvata con successo."
+        },
+        "imap_save_error": {
+            "title": "Impossibile salvare la configurazione IMAP"
+        },
+        "mailboxes_save_success": {
+            "title": "Configurazione delle caselle salvata",
+            "message": "La configurazione delle caselle è stata salvata con successo."
+        },
+        "mailboxes_save_error": {
+            "title": "Impossibile salvare la configurazione delle caselle"
+        }
+    },
+    "smtp_form": {
+        "host": "Host",
+        "host_description": "Nome host del server SMTP",
+        "port": "Porta",
+        "port_description": "Porte comuni: 25, 465, 587, 2525",
+        "username": "Nome utente",
+        "password": "Password",
+        "secure_label": "Usa connessione sicura (TLS/SSL)",
+        "secure_description": "Abilita per connessioni sicure sulle porte 465 o 587",
+        "submit": "Salva configurazione SMTP",
+        "saving": "Salvataggio..."
+    },
+    "imap_form": {
+        "host": "Host",
+        "host_description": "Nome host del server IMAP",
+        "port": "Porta",
+        "port_description": "Porte comuni: 143, 993 (SSL)",
+        "username": "Nome utente",
+        "password": "Password",
+        "secure_label": "Usa connessione sicura (SSL/TLS)",
+        "secure_description": "Abilita per connessioni sicure sulla porta 993",
+        "submit": "Salva configurazione IMAP",
+        "saving": "Salvataggio..."
+    },
+    "mailboxes_form": {
+        "inbox": "Posta in arrivo",
+        "inbox_description": "Inserisci il nome della tua posta in arrivo.",
+        "sent": "Inviati",
+        "sent_description": "Inserisci il nome della tua posta inviata.",
+        "drafts": "Bozze",
+        "drafts_description": "Inserisci il nome delle tue bozze.",
+        "trash": "Cestino",
+        "trash_description": "Inserisci il nome del cestino.",
+        "spam": "Spam",
+        "spam_description": "Inserisci il nome dello spam.",
+        "submit": "Salva configurazione delle caselle",
+        "saving": "Salvataggio..."
+    }
+}

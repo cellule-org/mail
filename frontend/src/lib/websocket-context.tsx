@@ -11,7 +11,7 @@ export interface WebSocketProviderConfig {
 interface WebSocketContextType {
   status: "connecting" | "open" | "closing" | "closed" | "error"
   messages: any[]
-  sendMessage: (message: string | { type: string; data: any }) => boolean
+  sendMessage: (message: { type: string; data: any }) => boolean
   connect: () => void
   disconnect: () => void
   getWebSocket: () => WebSocket | null

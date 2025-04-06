@@ -15,16 +15,23 @@
   "description": "",
   "dependencies": {
     "@fastify/websocket": "^11.0.2",
-    "@prisma/client": "^6.4.1",
+    "@prisma/client": "^6.5.0",
     "express": "^4.21.2",
-    "prisma": "^6.4.1",
+    "imapflow": "^1.0.183",
+    "jsonwebtoken": "^9.0.2",
+    "mailparser": "^3.7.2",
     "ws": "^8.18.1"
   },
   "devDependencies": {
     "@types/express": "^5.0.0",
+    "@types/imapflow": "^1.0.20",
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/mailparser": "^3.4.5",
     "@types/node": "^22.13.8",
-    "@types/pino": "^7.0.4",
+    "@types/nodemailer": "^6.4.17",
     "@types/ws": "^8.5.14",
+    "nodemailer": "^6.10.0",
+    "prisma": "^6.5.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.2"
   }

@@ -13,30 +13,77 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Type {
-  id    String @id @default(cuid())
-  name  String // "inbox", "sent", "drafts", "spam", "trash"
-  mails Mail[]
+model User {
+  id        String     @id
+  username  String     @unique
+  smtp      SMTP?
+  imap      IMAP?
+  mailboxes Mailboxes?
+  mails     Mail[]
+  Mailbox   Mailbox[]
 }
 
-model Tag {
-  id    String @id @default(cuid())
-  name  String
-  color String
+model SMTP {
+  id       String  @id @default(cuid())
+  host     String
+  port     Int
+  username String
+  password String
+  secure   Boolean
+  User     User    @relation(fields: [id], references: [id])
+}
+
+model IMAP {
+  id       String  @id @default(cuid())
+  host     String
+  port     Int
+  username String
+  password String
+  secure   Boolean
+  User     User    @relation(fields: [id], references: [id])
+}
+
+model Mailboxes {
+  id     String @id @default(cuid())
+  inbox  String
+  sent   String
+  drafts String
+  trash  String
+  spam   String
+  User   User   @relation(fields: [id], references: [id])
+}
+
+model Mailbox {
+  mailboxId String @id @default(cuid())
+  userId    String
+  name      String
+  Mail      Mail[]
+  User      User   @relation(fields: [userId], references: [id])
+}
+
+model Thread {
+  id    String @id
   mails Mail[]
 }
 
 model Mail {
-  id        String   @id @default(cuid())
-  from      String
-  to        String
+  mailId    String   @default(cuid())
+  userId    String
+  labels    String[] @default([])
+  flags     String[] @default([])
+  threadId  String
+  mailboxId String
+  from      String   @default("unknown")
+  to        String[] @default([])
+  cc        String[] @default([])
+  bcc       String[] @default([])
   subject   String
   text      String
-  html      String
-  typeId    String
-  read      Boolean  @default(false)
-  type      Type     @relation(fields: [typeId], references: [id])
-  tags      Tag[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  date      DateTime @default(now())
+
+  Thread  Thread  @relation(fields: [threadId], references: [id])
+  Mailbox Mailbox @relation(fields: [mailboxId], references: [mailboxId])
+  User    User    @relation(fields: [userId], references: [id])
+
+  @@id(name: "id", [mailId, userId])
 }
