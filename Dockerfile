@@ -19,7 +19,6 @@ RUN rm -rf frontend
 WORKDIR /app/backend
 
 RUN npm install
-RUN npm install -g prisma
 
 EXPOSE 3002
 
