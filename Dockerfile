@@ -22,4 +22,7 @@ RUN npm install
 
 EXPOSE 3002
 
+ARG APP_VERSION
+ENV APP_VERSION=$APP_VERSION
+
 CMD ["sh", "-c", "npx prisma migrate deploy || true && npx prisma generate || true && npx prisma db push --accept-data-loss || true && npm run dev"]
