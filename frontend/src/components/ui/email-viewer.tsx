@@ -49,7 +49,7 @@ export default function EmailViewer({
     const relativeTime = email.date ? getRelativeTime(new Date(email.date)) : '';
 
     return (
-        <section className="space-y-4 min-h-full h-full flex flex-col gap-4 pt-4" {...props}>
+        <section className="min-h-full h-full flex flex-col gap-4 py-4" {...props}>
             <div className="flex justify-between items-center w-full px-4">
                 <div className="flex gap-2">
                     {onDelete && email && (
