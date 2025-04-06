@@ -1,11 +1,12 @@
-import { Link, useSearchParams } from "react-router";
+import { Link, useNavigate, useSearchParams } from "react-router";
 import { ModeToggle } from "./mode-toogle";
 import { cn } from "@/lib/utils";
 import { Separator } from "./separator";
 import { Button } from "./button";
-import { File, Inbox, MailPlus, MailWarning, Send, Trash2 } from "lucide-react";
+import { Cog, File, Inbox, LogOut, MailPlus, MailWarning, Send, Trash2 } from "lucide-react";
 import { cloneElement, ReactElement } from "react";
 import { useTranslation } from "react-i18next";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
 
 interface Tag {
     id: string;
@@ -46,6 +47,7 @@ const MailboxLink = ({ mailbox, icon, label }: { mailbox: string, icon: ReactEle
 }
 
 const EmailNav = ({ tags, mailboxes, onNewMessage, className, ...props }: EmailNavProps & React.ComponentProps<"nav">) => {
+    const navigate = useNavigate();
     const { t } = useTranslation();
 
     return (
@@ -98,9 +100,28 @@ const EmailNav = ({ tags, mailboxes, onNewMessage, className, ...props }: EmailN
             </section>
 
 
-            <section className="flex flex-col gap-4">
-                <Button asChild variant={"outline"}><Link to="/settings">{t('settings')}</Link></Button>
-                <ModeToggle />
+            <section className="flex flex-row gap-2">
+                <ModeToggle className="flex-1 p-0" />
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button variant="outline" className="flex-1 !p-0" onClick={() => { navigate('/settings') }}>
+                            <Cog size={24} />
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p>{t('settings')}</p>
+                    </TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button variant="outline" className="flex-1 !p-0" onClick={() => { navigate('/logout') }}>
+                            <LogOut size={24} />
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p>{t('logout')}</p>
+                    </TooltipContent>
+                </Tooltip>
             </section>
         </nav>
     );
