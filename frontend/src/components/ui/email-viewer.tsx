@@ -40,8 +40,27 @@ export default function EmailViewer({
         return;
     }
     const cleanHtml = sanitizeHtml(email.text, {
-        allowedTags: sanitizeHtml.defaults.allowedTags.filter(tag => tag !== "script"),
-        allowedAttributes: false,
+        allowedTags: [
+            ...sanitizeHtml.defaults.allowedTags.filter(tag => tag !== "script"),
+            'img', 'a', 'p', 'b', 'i', 'strong', 'em', 'br', 'div', 'span'
+        ],
+        allowedAttributes: {
+            ...sanitizeHtml.defaults.allowedAttributes,
+            'a': ['href', 'target', 'rel'],
+            'img': ['src', 'alt'],
+        },
+        transformTags: {
+            'a': (_tagName, attribs) => {
+                return {
+                    tagName: 'a',
+                    attribs: {
+                        ...attribs,
+                        target: '_blank',
+                        rel: 'noopener noreferrer'
+                    }
+                };
+            }
+        }
     });
 
     const formattedTime = email.date ? format(new Date(email.date), 'dd/MM/yyyy HH:mm', { locale }) : '';
