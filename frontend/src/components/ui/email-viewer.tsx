@@ -112,14 +112,14 @@ export default function EmailViewer({
                                 onClick={() => setWhiteBackground(!whiteBackground)}
                             >
                                 {whiteBackground ? (
-                                    <MoonIcon size={16} />
-                                ) : (
                                     <SunIcon size={16} />
+                                ) : (
+                                    <MoonIcon size={16} />
                                 )}
                             </Button>
                         </TooltipTrigger>
                         <TooltipContent>
-                            <p>{whiteBackground ? t('dark_mode') : t('light_mode')}</p>
+                            <p>{whiteBackground ? t('light_mode') : t('dark_mode')}</p>
                         </TooltipContent>
                     </Tooltip>
                 </div>
