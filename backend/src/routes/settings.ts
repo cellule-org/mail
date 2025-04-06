@@ -5,7 +5,7 @@ import { handleReceiveEmail } from '../email';
 import { ImapConfig, MailboxesConfig, SmtpConfig } from '../types/events';
 import { getCookie } from '../utils/cookies';
 import { createLogger } from '../utils/logger';
-import { ImapFlow } from 'imapflow';
+import { ImapFlow, ListResponse } from 'imapflow';
 
 const router = express.Router();
 router.use(express.json());
@@ -33,7 +33,7 @@ const getUserConfig = async (req: Request, res: Response): Promise<void> => {
         if (user.smtp) user.smtp.password = '';
         if (user.imap) user.imap.password = '';
 
-        res.json({ success: true, ...user });
+        res.json({ success: true, data: user });
     } catch (err: any) {
         logger.error(err);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -50,6 +50,25 @@ const validateAllConfig = async (user_id: string) => {
     if (user && user.smtp && user.imap && user.mailboxes) {
         handleReceiveEmail(user_id);
     }
+};
+
+const getInbox = (mailboxes: ListResponse[], flags: string[]): string | undefined => {
+    // Find the first mailbox that doesn't have any of the specified flags
+    const mailbox = mailboxes.find((m) =>
+        !Array.from(m.flags).some(flag => flags.includes(flag))
+    );
+    if (mailbox) {
+        return mailbox.path;
+    }
+    return undefined;
+};
+
+const getMailbox = (mailboxes: ListResponse[], flag: string): string | undefined => {
+    const mailbox = mailboxes.find((m) => Array.from(m.flags).includes(flag));
+    if (mailbox) {
+        return mailbox.path;
+    }
+    return undefined;
 };
 
 router.post('/imap', async (req: Request, res: Response): Promise<void> => {
@@ -72,7 +91,51 @@ router.post('/imap', async (req: Request, res: Response): Promise<void> => {
                     }
                 }
             },
-            select: { imap: true }
+            select: { imap: true, mailboxes: true }
+        });
+
+        // Test the connection and fetch mailboxes if possible
+        const client = new ImapFlow({
+            host: imapConfig.host,
+            port: imapConfig.port,
+            secure: imapConfig.secure,
+            auth: {
+                user: imapConfig.username,
+                pass: imapConfig.password
+            },
+            logger: false
+        });
+
+        await client.connect();
+        const mailboxes = await client.list();
+        await client.logout();
+
+        // Check if the mailboxes are valid
+        const inbox = getInbox(mailboxes, ['\\Sent', '\\Drafts', '\\Trash', '\\Spam']);
+        const sent = getMailbox(mailboxes, '\\Sent');
+        const drafts = getMailbox(mailboxes, '\\Drafts');
+        const trash = getMailbox(mailboxes, '\\Trash');
+        const spam = getMailbox(mailboxes, '\\Spam');
+
+        const mailboxData = {
+            inbox: inbox || '',
+            sent: sent || '',
+            drafts: drafts || '',
+            trash: trash || '',
+            spam: spam || ''
+        };
+
+        // Update the mailboxes configuration
+        await prisma.user.update({
+            where: { id: userId },
+            data: {
+                mailboxes: {
+                    upsert: {
+                        create: mailboxData,
+                        update: mailboxData
+                    }
+                }
+            }
         });
 
         validateAllConfig(userId);
