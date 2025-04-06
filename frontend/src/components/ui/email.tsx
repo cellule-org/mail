@@ -89,7 +89,7 @@ export default function EmailForm({
             const dy = e.clientY - resizeStartPos.current.y;
 
             setSize({
-                width: Math.min(Math.max(300, startSize.current.width - dx), window.innerWidth * 0.5),
+                width: Math.min(Math.max(300, startSize.current.width - dx), window.innerWidth * 0.75),
                 height: Math.min(Math.max(600, startSize.current.height - dy), window.innerHeight * 0.8),
             });
         };
