@@ -2,10 +2,6 @@ interface DockerTag {
     name: string;
 }
 
-interface DockerResponse {
-    results: DockerTag[];
-}
-
 type VersionCheckResult = {
     isLatest: boolean;
     latestVersion: string;
