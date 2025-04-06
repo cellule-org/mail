@@ -14,6 +14,26 @@ import { Transporter } from 'nodemailer';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import { ImapFlow } from 'imapflow';
 import { createLogger } from './utils/logger';
+import { checkIfLatestVersion } from './utils/version';
+
+
+
+checkIfLatestVersion()
+    .then((result) => {
+        const versionLogger = createLogger('version');
+        if (result.isLatest) {
+            versionLogger.info(`Version ${process.env.APP_VERSION} is up to date.`);
+        } else {
+            versionLogger.warn(`Version ${process.env.APP_VERSION} is not the latest.`);
+            versionLogger.warn(`Latest version: ${result.latestVersion}`);
+            versionLogger.warn(`Current version: ${process.env.APP_VERSION}`);
+            versionLogger.warn(`Latest digest: ${result.latestDigest}`);
+            versionLogger.warn(`Current digest: ${result.currentDigest}`);
+        }
+    })
+    .catch(err => {
+        console.error('Error checking version:', err.message);
+    });
 
 const logger = createLogger('main');
 
