@@ -212,11 +212,11 @@ export default function Index() {
   return (
     <section className="flex flex-col items-center justify-between h-screen max-h-screen min-h-screen">
       <ResizablePanelGroup className="flex flex-row w-full h-full max-h-screen gap-1 bg-card rounded-xl shadow-lg" direction="horizontal">
-        <ResizablePanel defaultSize={12} minSize={12} maxSize={20} className="min-w-fit">
+        <ResizablePanel defaultSize={12} minSize={12} maxSize={12} className="min-w-fit">
           <EmailNav mailboxes={mailboxes} tags={[]} className="p-4 min-w-fit" onNewMessage={handleNewMail} />
         </ResizablePanel>
-        <ResizableHandle withHandle />
-        <ResizablePanel defaultSize={46.25} minSize={25} maxSize={80} className="!overflow-y-auto scrollbar">
+        <ResizableHandle />
+        <ResizablePanel minSize={30} className="!overflow-y-auto scrollbar">
           <EmailList
             locale={getLocaleFromI18n(language)}
             className="w-full pt-4 px-4"
@@ -237,7 +237,7 @@ export default function Index() {
         {selectedMail && (
           <>
             <ResizableHandle withHandle />
-            <ResizablePanel defaultSize={46.25} minSize={25} maxSize={68} className="!overflow-y-auto">
+            <ResizablePanel minSize={30} className="!overflow-y-auto">
               <EmailViewer email={selectedMail} locale={getLocaleFromI18n(language)} onReply={handleReply} onForward={handleForward} onDelete={handleDelete} onMarkRead={handleMarkAsRead} onMarkUnread={handleMarkAsUnread} onClose={() => setSelectedMail(null)} />
             </ResizablePanel >
           </>
