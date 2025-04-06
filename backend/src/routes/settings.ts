@@ -48,7 +48,7 @@ export const validateAllConfig = async (user_id: string) => {
         select: { smtp: true, imap: true, mailboxes: true }
     });
     if (user && user.smtp && user.imap && user.mailboxes) {
-        handleReceiveEmail(user_id);
+        await handleReceiveEmail(user_id);
     }
 };
 

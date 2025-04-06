@@ -274,34 +274,37 @@ const handleWebSocketClose = (): void => {
     initializeWebSocket();
 };
 
-const startServer = (): void => {
+const startServer = async (): Promise<void> => {
     logger.info('Initializing IMAP/SMTP connections for all users...');
-    prisma.user.findMany({
-        include: {
-            imap: true,
-            smtp: true
-        }
-    }).then(users => {
-        if (!users) {
+    try {
+        const users = await prisma.user.findMany({
+            include: {
+                imap: true,
+                smtp: true
+            }
+        });
+
+        if (!users || users.length === 0) {
             logger.error('No users found');
             return;
         }
-        users.map(async (user) => {
+
+        await Promise.all(users.map(async (user) => {
             if (!user.imap || !user.smtp) return;
             userConnections.set(user.id, {
                 transporter: createTransporter(user.smtp),
                 imap_flow: createImapFlow(user.imap)
             });
-            await validateAllConfig(user.id)
-        });
-    }).then(() => {
+            await validateAllConfig(user.id);
+        }));
+
         server.listen(3002, () => {
             logger.info('Server is running on http://localhost:3002');
             logger.info('WebSocket server is running on ws://localhost:3002');
         });
-    }).catch(err => {
+    } catch (err) {
         logger.error('Error starting server:', err);
-    });
+    }
 };
 
 initializeWebSocket();
