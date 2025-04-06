@@ -179,7 +179,6 @@ router.get('/mailboxes', async (req: Request, res: Response): Promise<void> => {
         await client.connect();
 
         const mailboxes = await client.list();
-        console.log(mailboxes);
         await client.logout();
 
         res.json({ success: true, data: mailboxes.map((m) => m.path) });
