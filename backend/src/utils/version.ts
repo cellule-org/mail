@@ -1,5 +1,10 @@
 interface DockerTag {
     name: string;
+    images: { digest: string }[];
+}
+
+interface DockerTagResponse {
+    results: DockerTag[];
 }
 
 type VersionCheckResult = {
@@ -20,14 +25,14 @@ export async function checkIfLatestVersion(): Promise<VersionCheckResult> {
     const fetchTagDigest = async (tag: string): Promise<string> => {
         const res = await fetch(`${baseUrl}/${tag}`);
         if (!res.ok) throw new Error(`Failed to fetch tag ${tag}`);
-        const json = await res.json();
+        const json = await res.json() as DockerTag;
         return json.images[0].digest;
     };
 
     const fetchAllTags = async (): Promise<{ name: string; digest: string }[]> => {
         const res = await fetch(`${baseUrl}?page_size=100`);
         if (!res.ok) throw new Error('Failed to fetch tags');
-        const json = await res.json();
+        const json = await res.json() as DockerTagResponse;
         return json.results.map((tag: any) => ({
             name: tag.name,
             digest: tag.images[0].digest,
