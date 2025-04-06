@@ -133,3 +133,7 @@
     @apply scrollbar-thin scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-thumb-neutral-300 scrollbar-track-transparent dark:scrollbar-thumb-neutral-900;
   }
 }
+
+button {
+  @apply cursor-pointer;
+}
