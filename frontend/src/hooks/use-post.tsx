@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { toast } from "sonner"
 
 interface UsePostOptions<_TData, TResponse> {
     url: string
@@ -35,7 +36,12 @@ export function usePost<TData, TResponse>({ url, onSuccess, onError }: UsePostOp
         } catch (err) {
             const error = err instanceof Error ? err : new Error(String(err))
             setError(error)
-            onError?.(error)
+            if (onError) {
+                onError(error)
+            } else {
+                console.error("Error in usePost:", error)
+                toast.error("An error occurred while processing your request.")
+            }
             throw error
         } finally {
             setIsLoading(false)
